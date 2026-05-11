@@ -22,220 +22,213 @@
             font-family: 'Poppins', 'Segoe UI', 'Inter', system-ui, -apple-system, sans-serif;
             padding: 20px;
             overflow: hidden;
+            height: 100vh;
+            width: 100vw;
         }
 
-        /* 主游戏容器 */
+        /* 主游戏容器 - 修复平板显示完整，不滚动，紧凑内边距 */
         .game-container {
-            width: 1200px;
-            max-width: 90vw;
-            background: rgba(18, 25, 55, 0.6);
+            width: 1100px;
+            max-width: 92vw;
+            height: auto;
+            max-height: 98vh;
+            background: rgba(18, 25, 55, 0.65);
             backdrop-filter: blur(12px);
-            border-radius: 72px;
-            padding: 30px 40px 40px;
+            border-radius: 60px;
+            padding: 20px 35px 25px;
             box-shadow: 0 30px 50px rgba(0, 0, 0, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.1);
             border: 1px solid rgba(90, 170, 255, 0.5);
             transition: opacity 0.3s ease;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
         }
 
-        /* 头部 */
+        /* 头部紧凑 */
         .header {
             text-align: center;
-            margin-bottom: 28px;
+            margin-bottom: 12px;
         }
         .title {
-            font-size: 3.5rem;
+            font-size: 2.8rem;
             font-weight: 800;
             background: linear-gradient(135deg, #FFD966, #FFB347, #5dade2);
             background-clip: text;
             -webkit-background-clip: text;
             color: transparent;
-            letter-spacing: 3px;
+            letter-spacing: 2px;
             text-shadow: 0 0 12px rgba(255, 180, 70, 0.3);
         }
         .sub {
             color: #c9e2ff;
-            font-size: 1rem;
+            font-size: 0.85rem;
             font-weight: 500;
-            margin-top: 10px;
+            margin-top: 6px;
             background: rgba(0, 0, 0, 0.3);
             display: inline-block;
-            padding: 5px 24px;
+            padding: 3px 18px;
             border-radius: 40px;
-            backdrop-filter: blur(4px);
         }
 
-        /* AI 猜测区 */
+        /* AI 猜测区 - 缩放比例更好 */
         .ai-guess-area {
             background: radial-gradient(circle at 30% 20%, #1e2a53, #0a0f2a);
-            border-radius: 60px;
-            padding: 22px 20px;
-            margin: 20px 0;
+            border-radius: 50px;
+            padding: 15px 15px;
+            margin: 10px 0;
             border: 1px solid #6bc8ff;
-            box-shadow: 0 0 24px rgba(80, 180, 255, 0.2), inset 0 0 6px rgba(255,255,200,0.1);
+            box-shadow: 0 0 20px rgba(80, 180, 255, 0.2);
             text-align: center;
         }
         .guess-label {
-            font-size: 1.2rem;
-            letter-spacing: 2px;
+            font-size: 1rem;
+            letter-spacing: 1px;
             color: #b8dcff;
-            font-weight: 600;
+            font-weight: 500;
         }
         .guess-number {
-            font-size: 7rem;
+            font-size: 5.2rem;
             font-weight: 800;
             font-family: 'Orbitron', monospace;
             color: #f9f3c1;
-            text-shadow: 0 0 12px #ffb347, 0 0 25px #f39c12;
+            text-shadow: 0 0 12px #ffb347, 0 0 20px #f39c12;
             line-height: 1;
-            margin: 10px 0;
+            margin: 6px 0;
             background: rgba(0, 0, 0, 0.25);
             display: inline-block;
             padding: 0 20px;
-            border-radius: 70px;
-            letter-spacing: 6px;
+            border-radius: 60px;
+            letter-spacing: 4px;
         }
         .thinking {
-            font-size: 0.9rem;
+            font-size: 0.8rem;
             color: #b1dcfb;
             display: flex;
             justify-content: center;
             align-items: center;
-            gap: 12px;          /* 增加间距，防止覆盖 */
-            margin-top: 8px;
+            gap: 10px;
+            margin-top: 4px;
         }
-        /* 修复三个点闪烁动画位置，不再覆盖文字 */
         .dot-flashing {
             display: inline-block;
-            width: 8px;
-            height: 8px;
+            width: 6px;
+            height: 6px;
             border-radius: 50%;
             background-color: #5dade2;
-            box-shadow: 12px 0 0 #5dade2, -12px 0 0 #5dade2;
+            box-shadow: 10px 0 0 #5dade2, -10px 0 0 #5dade2;
             animation: flash 1s infinite;
-            margin-left: 4px;
-            position: relative;
-            top: -1px; /* 微调垂直对齐 */
+            margin-left: 2px;
         }
         @keyframes flash {
             0%, 100% { opacity: 0.2; }
             50% { opacity: 1; }
         }
 
-        /* 按钮组 */
+        /* 按钮组 - 更紧凑，适应平板点击 */
         .button-panel {
             display: flex;
             justify-content: center;
-            gap: 35px;
-            margin: 20px 0 20px;
+            gap: 25px;
+            margin: 12px 0 8px;
             flex-wrap: wrap;
         }
         .game-btn {
-            font-size: 1.8rem;
+            font-size: 1.5rem;
             font-weight: bold;
-            padding: 12px 30px;
+            padding: 8px 25px;
             border: none;
-            border-radius: 70px;
+            border-radius: 60px;
             background: #1f2a44;
             color: white;
             cursor: pointer;
             transition: transform 0.08s, box-shadow 0.2s;
-            box-shadow: 0 6px 0 #0f1428;
+            box-shadow: 0 5px 0 #0f1428;
             font-family: inherit;
-            letter-spacing: 2px;
-            min-width: 140px;
+            letter-spacing: 1px;
+            min-width: 120px;
         }
         .game-btn:active {
-            transform: translateY(3px);
+            transform: translateY(2px);
             box-shadow: 0 2px 0 #0f1428;
         }
         .btn-up {
             background: linear-gradient(135deg, #f39c12, #e67e22);
-            box-shadow: 0 6px 0 #b45f1b;
+            box-shadow: 0 5px 0 #b45f1b;
         }
         .btn-down {
             background: linear-gradient(135deg, #3498db, #2980b9);
-            box-shadow: 0 6px 0 #1c5a85;
+            box-shadow: 0 5px 0 #1c5a85;
         }
         .btn-correct {
             background: linear-gradient(135deg, #2ecc71, #27ae60);
-            box-shadow: 0 6px 0 #1e6b3e;
+            box-shadow: 0 5px 0 #1e6b3e;
         }
         .btn-reset {
             background: linear-gradient(135deg, #9b59b6, #8e44ad);
-            box-shadow: 0 6px 0 #5e3370;
-            font-size: 1.2rem;
-            padding: 10px 28px;
+            box-shadow: 0 5px 0 #5e3370;
+            font-size: 1.1rem;
+            padding: 7px 20px;
         }
 
-        /* 信息栏 */
+        /* 信息栏 - 三列自适应，防止换行溢出 */
         .info-bar {
             background: #0c1233b3;
             border-radius: 48px;
-            padding: 14px 25px;
-            margin-top: 18px;
+            padding: 10px 20px;
+            margin: 10px 0 5px;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            flex-wrap: wrap;
-            gap: 15px;
+            flex-wrap: nowrap;
+            gap: 12px;
             backdrop-filter: blur(6px);
             border: 1px solid #3d699b;
         }
-        .range-box {
+        .range-box, .counter, .history-area {
             background: #00000055;
             border-radius: 36px;
-            padding: 6px 22px;
-            font-size: 1.1rem;
-            font-weight: 600;
+            padding: 4px 16px;
+            font-size: 0.9rem;
+            font-weight: 500;
             color: #cbe6ff;
+            white-space: nowrap;
         }
-        .range-value {
+        .range-value, .step-number {
             color: #ffdfa5;
-            font-size: 1.5rem;
+            font-size: 1.3rem;
             font-weight: bold;
-            margin-left: 8px;
+            margin-left: 6px;
             font-family: monospace;
         }
-        .counter {
-            background: #00000055;
-            border-radius: 36px;
-            padding: 6px 22px;
-            font-size: 1.1rem;
-            font-weight: 500;
-            color: #d4ecff;
-        }
-        .step-number {
-            color: #ffda88;
-            font-size: 1.6rem;
-            font-weight: bold;
-            margin-right: 5px;
-        }
         .history-area {
-            background: #030c22aa;
-            border-radius: 40px;
-            padding: 8px 24px;
             flex: 1;
-            min-width: 200px;
+            min-width: 0;
+            white-space: normal;
             text-align: center;
-            font-size: 0.85rem;
-            color: #cfedff;
+            padding: 6px 12px;
+            overflow-x: auto;
         }
         .history-text {
             font-weight: 500;
-            letter-spacing: 0.3px;
-            max-height: 55px;
+            font-size: 0.75rem;
+            max-height: 48px;
             overflow-y: auto;
-            line-height: 1.3;
+            white-space: normal;
+            word-break: break-word;
+            line-height: 1.25;
+        }
+        .counter {
+            white-space: nowrap;
         }
 
-        /* 规则弹窗 (简洁干净) */
+        /* 规则弹窗 (紧凑适配) */
         .rules-modal {
             position: fixed;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-            background: rgba(0, 0, 0, 0.8);
+            background: rgba(0, 0, 0, 0.85);
             backdrop-filter: blur(15px);
             display: flex;
             justify-content: center;
@@ -248,46 +241,37 @@
         .rules-card {
             background: linear-gradient(145deg, #202a50, #12183c);
             border-radius: 56px;
-            padding: 40px 50px;
-            max-width: 540px;
+            padding: 30px 40px;
+            max-width: 500px;
             width: 85%;
             text-align: center;
             border: 1px solid #ffb347;
             box-shadow: 0 20px 40px rgba(0,0,0,0.6);
         }
         .rules-card h2 {
-            font-size: 2.2rem;
+            font-size: 2rem;
             color: #ffd966;
-            margin-bottom: 24px;
-            font-weight: 700;
-            letter-spacing: 2px;
-        }
-        .rules-card p {
-            font-size: 1.2rem;
-            color: #f0f3ff;
-            margin: 18px 0;
-            line-height: 1.5;
-            text-align: left;
+            margin-bottom: 20px;
         }
         .rule-list {
             text-align: left;
             background: rgba(0,0,0,0.3);
-            padding: 18px 24px;
+            padding: 14px 20px;
             border-radius: 40px;
-            margin: 20px 0;
+            margin: 15px 0;
         }
         .rule-list li {
-            font-size: 1.05rem;
-            margin: 12px 0;
+            font-size: 1rem;
+            margin: 10px 0;
             color: #e2ecff;
             list-style-type: none;
-            padding-left: 24px;
+            padding-left: 22px;
             position: relative;
         }
         .rule-list li::before {
             content: "•";
             color: #ffb347;
-            font-size: 1.4rem;
+            font-size: 1.3rem;
             position: absolute;
             left: 0;
             top: -2px;
@@ -295,23 +279,22 @@
         .start-game-btn {
             background: #2ecc71;
             border: none;
-            font-size: 1.4rem;
+            font-size: 1.3rem;
             font-weight: bold;
-            padding: 12px 32px;
+            padding: 10px 28px;
             border-radius: 50px;
-            margin-top: 15px;
+            margin-top: 12px;
             color: white;
             cursor: pointer;
-            transition: 0.08s linear;
-            box-shadow: 0 5px 0 #1f8f4d;
-            width: 80%;
+            box-shadow: 0 4px 0 #1f8f4d;
+            width: 70%;
         }
         .start-game-btn:active {
             transform: translateY(2px);
-            box-shadow: 0 2px 0 #1f8f4d;
+            box-shadow: 0 1px 0 #1f8f4d;
         }
 
-        /* 胜利弹窗 (美观整洁) */
+        /* 胜利弹窗 */
         .victory-overlay {
             position: fixed;
             top: 0;
@@ -331,78 +314,89 @@
         .victory-card {
             background: linear-gradient(145deg, #26335f, #151e42);
             border-radius: 56px;
-            padding: 36px 48px;
+            padding: 28px 40px;
             text-align: center;
             border: 1px solid #f7b731;
             box-shadow: 0 0 50px rgba(255, 200, 70, 0.4);
-            max-width: 480px;
+            max-width: 450px;
             width: 80%;
         }
         .victory-card h2 {
-            font-size: 2.2rem;
+            font-size: 2rem;
             color: #ffde9e;
-            margin-bottom: 18px;
-            font-weight: 700;
+            margin-bottom: 14px;
         }
         .victory-message-box {
             background: rgba(0, 0, 0, 0.4);
-            padding: 20px 15px;
+            padding: 16px 12px;
             border-radius: 48px;
-            margin: 20px 0;
+            margin: 16px 0;
         }
         .victory-message-box p {
-            font-size: 1.4rem;
+            font-size: 1.3rem;
             color: #ffffff;
             font-weight: 500;
-            word-break: break-word;
         }
         .victory-stats {
-            font-size: 1.2rem;
+            font-size: 1rem;
             color: #ffdd99;
-            margin-top: 8px;
+            margin-top: 6px;
         }
         .close-victory {
             background: #f39c12;
             border: none;
-            font-size: 1.3rem;
-            padding: 10px 28px;
+            font-size: 1.2rem;
+            padding: 8px 24px;
             border-radius: 50px;
             font-weight: bold;
             cursor: pointer;
             color: #1e2a3a;
-            margin-top: 12px;
-            transition: 0.08s linear;
+            margin-top: 10px;
             box-shadow: 0 3px 0 #b45f1b;
         }
         .close-victory:active {
             transform: translateY(2px);
-            box-shadow: 0 1px 0 #b45f1b;
         }
 
-        /* 辅助样式 */
         footer {
-            font-size: 0.7rem;
+            font-size: 0.6rem;
             text-align: center;
-            margin-top: 18px;
+            margin-top: 10px;
             color: #9fb9dd;
         }
         button { touch-action: manipulation; }
-        .history-text::-webkit-scrollbar { width: 4px; }
+        .history-text::-webkit-scrollbar { width: 3px; }
         .history-text::-webkit-scrollbar-thumb { background: #ffbf69; border-radius: 10px; }
-        body, html { overflow: hidden; height: 100%; }
-        @media (max-width: 1300px) {
-            .guess-number { font-size: 5.5rem; }
-            .game-btn { font-size: 1.5rem; padding: 10px 24px; min-width: 120px; }
+
+        /* 确保 1920x1200 屏幕完美无滚动条，内容完整 */
+        @media (min-width: 1800px) {
+            .game-container { max-width: 1050px; }
+            .guess-number { font-size: 5rem; }
         }
-        @media (max-height: 750px) {
-            .game-container { padding: 18px 30px; }
-            .guess-number { font-size: 4.6rem; margin: 5px 0; }
+        @media (max-height: 1050px) and (min-height: 800px) {
+            .game-container { padding: 16px 35px 20px; }
+            .guess-number { font-size: 4.8rem; }
+            .game-btn { padding: 6px 22px; font-size: 1.4rem; }
+        }
+        @media (max-height: 900px) {
+            .game-container { padding: 12px 30px 18px; }
+            .ai-guess-area { padding: 8px 12px; margin: 6px 0; }
+            .guess-number { font-size: 4.2rem; margin: 4px 0; }
+            .button-panel { gap: 20px; margin: 8px 0; }
+            .info-bar { padding: 6px 16px; }
+            .range-value, .step-number { font-size: 1.2rem; }
+            .title { font-size: 2.4rem; }
+        }
+        body, html {
+            overflow: hidden;
+            height: 100%;
+            width: 100%;
         }
     </style>
 </head>
 <body>
 
-<!-- 规则弹窗：干净简洁 -->
+<!-- 规则弹窗 -->
 <div id="rulesModal" class="rules-modal">
     <div class="rules-card">
         <h2>数字炸弹</h2>
@@ -412,7 +406,7 @@
             <li>当 AI 猜中时，点击“猜对了”取得胜利</li>
             <li>AI 使用二分法快速逼近，试试能多快被猜中</li>
         </div>
-        <p style="text-align:center; font-size:0.95rem;">准备好了吗？点击开始挑战</p>
+        <p style="text-align:center; font-size:0.9rem;">准备好挑战AI的猜心术了吗？</p>
         <button class="start-game-btn" id="startGameBtn">开始游戏</button>
     </div>
 </div>
@@ -427,7 +421,7 @@
         <div class="guess-label">AI 正在推理中</div>
         <div class="guess-number" id="aiGuessDisplay">50</div>
         <div class="thinking">
-            <span>二分算法 · 精准定位</span>
+            <span>二分算法·精准定位</span>
             <span class="dot-flashing"></span>
         </div>
     </div>
@@ -441,7 +435,7 @@
     <div class="info-bar">
         <div class="range-box">
             当前区间 
-            <span class="range-value" id="rangeDisplay">1 - 100</span>
+            <span class="range-value" id="rangeDisplay">1-100</span>
         </div>
         <div class="counter">
             猜测次数 
@@ -452,7 +446,7 @@
             <div class="history-text" id="historyLog">等待游戏开始</div>
         </div>
     </div>
-    <div class="button-panel" style="margin-top: 5px; gap: 20px;">
+    <div class="button-panel" style="margin-top: 0px; gap: 20px;">
         <button class="game-btn btn-reset" id="resetGameBtn">新的一局 / 重置</button>
     </div>
     <footer>提示：心中默想数字后，根据AI猜测诚实点击“大了/小了”，AI会快速逼近答案</footer>
@@ -502,26 +496,25 @@
         /********** UI 更新 **********/
         function updateUI() {
             aiGuessSpan.innerText = currentGuess;
-            rangeDisplaySpan.innerText = `${currentMin} - ${currentMax}`;
+            rangeDisplaySpan.innerText = `${currentMin}-${currentMax}`;
             stepCountSpan.innerText = step;
             if (historyMessages.length === 0) {
                 historyLogDiv.innerHTML = '✨ 等待 AI 第一次猜测';
             } else {
-                let recent = historyMessages.slice(-7);
+                let recent = historyMessages.slice(-6);
                 historyLogDiv.innerHTML = recent.map(msg => `• ${msg}`).join('<br>');
             }
         }
         
         function addHistory(msg) {
             historyMessages.push(msg);
-            if (historyMessages.length > 10) historyMessages.shift();
+            if (historyMessages.length > 9) historyMessages.shift();
             updateUI();
         }
         
         /********** AI 生成新猜测（二分法核心） **********/
         function generateNewGuess() {
             if (currentMin > currentMax) {
-                // 容错修复
                 let minVal = Math.min(currentMin, currentMax);
                 let maxVal = Math.max(currentMin, currentMax);
                 currentMin = Math.max(1, minVal);
@@ -539,24 +532,18 @@
         
         /********** 重置游戏（重新弹出规则页面） **********/
         function fullResetWithRules() {
-            // 完全重置状态，并且重新显示规则弹窗 (游戏容器隐藏)
             gameContainer.style.opacity = '0';
             rulesModal.style.display = 'flex';
             rulesModal.style.visibility = 'visible';
             rulesModal.style.opacity = '1';
-            // 重置内部变量以便下次开始游戏时全新
             resetGameInternal(true);
-            // 禁用游戏按钮（未开始时不可操作）
             setButtonsEnabled(false);
-            // 清空多余历史
             historyMessages = [];
             updateUI();
-            // 确保胜利弹窗关闭
             victoryModal.style.visibility = 'hidden';
             victoryModal.style.opacity = '0';
         }
         
-        // 纯内部重置，不影响弹窗
         function resetGameInternal(silent = false) {
             gameActive = true;
             currentMin = 1;
@@ -572,7 +559,6 @@
             updateUI();
         }
         
-        // 启用/禁用游戏按钮
         function setButtonsEnabled(enabled) {
             const btns = [greaterBtn, lessBtn, correctBtn];
             btns.forEach(btn => {
@@ -602,7 +588,7 @@
             }
             let newMax = currentGuess - 1;
             if (newMax < currentMin) {
-                addHistory(`❌ 矛盾：区间内没有更小的数字，请重置`);
+                addHistory(`❌ 矛盾，请重置`);
                 gameActive = false;
                 setButtonsEnabled(false);
                 return;
@@ -613,7 +599,7 @@
             if (currentMin === currentMax) {
                 currentGuess = currentMin;
                 updateUI();
-                addHistory(`区间仅剩数字 ${currentGuess}，可点击“猜对了”`);
+                addHistory(`区间仅剩 ${currentGuess}，可点“猜对了”`);
             } else {
                 currentGuess = generateNewGuess();
                 updateUI();
@@ -634,7 +620,7 @@
             }
             let newMin = currentGuess + 1;
             if (newMin > currentMax) {
-                addHistory(`❌ 矛盾：区间内没有更大的数字，请重置`);
+                addHistory(`❌ 矛盾，请重置`);
                 gameActive = false;
                 setButtonsEnabled(false);
                 return;
@@ -645,7 +631,7 @@
             if (currentMin === currentMax) {
                 currentGuess = currentMin;
                 updateUI();
-                addHistory(`区间仅剩数字 ${currentGuess}，点击“猜对了”胜利`);
+                addHistory(`区间收束至 ${currentGuess}，点击“猜对了”`);
             } else {
                 currentGuess = generateNewGuess();
                 updateUI();
@@ -659,28 +645,25 @@
             updateUI();
             gameActive = false;
             setButtonsEnabled(false);
-            victoryMessageText.innerText = `🎯 命中数字 ${currentGuess}  🎯`;
+            victoryMessageText.innerText = `🎯 命中数字 ${currentGuess}`;
             victoryStatsSpan.innerHTML = `AI 共猜测 ${step} 次 精准命中`;
             victoryModal.style.visibility = 'visible';
             victoryModal.style.opacity = '1';
             addHistory(`🎉 胜利！AI ${step} 次猜中数字 ${currentGuess}`);
         }
         
-        // 关闭胜利弹窗并重置游戏（弹出规则页）
         function closeVictoryAndResetToRules() {
             victoryModal.style.visibility = 'hidden';
             victoryModal.style.opacity = '0';
             fullResetWithRules();
         }
         
-        /********** 开始游戏（从规则页启动） **********/
+        /********** 开始游戏 **********/
         function startGame() {
-            // 隐藏规则弹窗，显示游戏容器
             rulesModal.style.visibility = 'hidden';
             rulesModal.style.opacity = '0';
             rulesModal.style.display = 'none';
             gameContainer.style.opacity = '1';
-            // 重置内部状态（干净）
             gameActive = true;
             currentMin = 1;
             currentMax = 100;
@@ -694,20 +677,18 @@
             victoryModal.style.opacity = '0';
         }
         
-        /********** 按钮事件绑定 **********/
+        /********** 事件绑定 **********/
         greaterBtn.addEventListener('click', handleGreater);
         lessBtn.addEventListener('click', handleLess);
         correctBtn.addEventListener('click', handleCorrect);
-        resetBtn.addEventListener('click', () => {
-            fullResetWithRules();
-        });
+        resetBtn.addEventListener('click', () => { fullResetWithRules(); });
         closeVictoryBtn.addEventListener('click', closeVictoryAndResetToRules);
         victoryModal.addEventListener('click', (e) => {
             if (e.target === victoryModal) closeVictoryAndResetToRules();
         });
         startGameBtn.addEventListener('click', startGame);
         
-        /********** 初始状态：规则弹窗显示，游戏不可交互 **********/
+        // 初始状态
         gameContainer.style.opacity = '0';
         setButtonsEnabled(false);
         resetGameInternal(true);
