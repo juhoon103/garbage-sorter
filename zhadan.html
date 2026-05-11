@@ -1,0 +1,721 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>数字炸弹 - AI猜心挑战</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            user-select: none; /* 提升平板触控体验 */
+        }
+
+        body {
+            min-height: 100vh;
+            /* 深邃星空紫蓝渐变，保留神秘但不昏暗 */
+            background: linear-gradient(145deg, #191e3f 0%, #202454 50%, #16213e 100%);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-family: 'Poppins', 'Segoe UI', 'Inter', system-ui, -apple-system, sans-serif;
+            padding: 20px;
+            overflow: hidden;
+        }
+
+        /* 主游戏容器 */
+        .game-container {
+            width: 1200px;
+            max-width: 90vw;
+            background: rgba(18, 25, 55, 0.6);
+            backdrop-filter: blur(12px);
+            border-radius: 72px;
+            padding: 30px 40px 40px;
+            box-shadow: 0 30px 50px rgba(0, 0, 0, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(90, 170, 255, 0.5);
+            transition: opacity 0.3s ease;
+        }
+
+        /* 头部 */
+        .header {
+            text-align: center;
+            margin-bottom: 28px;
+        }
+        .title {
+            font-size: 3.5rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, #FFD966, #FFB347, #5dade2);
+            background-clip: text;
+            -webkit-background-clip: text;
+            color: transparent;
+            letter-spacing: 3px;
+            text-shadow: 0 0 12px rgba(255, 180, 70, 0.3);
+        }
+        .sub {
+            color: #c9e2ff;
+            font-size: 1rem;
+            font-weight: 500;
+            margin-top: 10px;
+            background: rgba(0, 0, 0, 0.3);
+            display: inline-block;
+            padding: 5px 24px;
+            border-radius: 40px;
+            backdrop-filter: blur(4px);
+        }
+
+        /* AI 猜测区 */
+        .ai-guess-area {
+            background: radial-gradient(circle at 30% 20%, #1e2a53, #0a0f2a);
+            border-radius: 60px;
+            padding: 22px 20px;
+            margin: 20px 0;
+            border: 1px solid #6bc8ff;
+            box-shadow: 0 0 24px rgba(80, 180, 255, 0.2), inset 0 0 6px rgba(255,255,200,0.1);
+            text-align: center;
+        }
+        .guess-label {
+            font-size: 1.2rem;
+            letter-spacing: 2px;
+            color: #b8dcff;
+            font-weight: 600;
+        }
+        .guess-number {
+            font-size: 7rem;
+            font-weight: 800;
+            font-family: 'Orbitron', monospace;
+            color: #f9f3c1;
+            text-shadow: 0 0 12px #ffb347, 0 0 25px #f39c12;
+            line-height: 1;
+            margin: 10px 0;
+            background: rgba(0, 0, 0, 0.25);
+            display: inline-block;
+            padding: 0 20px;
+            border-radius: 70px;
+            letter-spacing: 6px;
+        }
+        .thinking {
+            font-size: 0.9rem;
+            color: #b1dcfb;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 12px;          /* 增加间距，防止覆盖 */
+            margin-top: 8px;
+        }
+        /* 修复三个点闪烁动画位置，不再覆盖文字 */
+        .dot-flashing {
+            display: inline-block;
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background-color: #5dade2;
+            box-shadow: 12px 0 0 #5dade2, -12px 0 0 #5dade2;
+            animation: flash 1s infinite;
+            margin-left: 4px;
+            position: relative;
+            top: -1px; /* 微调垂直对齐 */
+        }
+        @keyframes flash {
+            0%, 100% { opacity: 0.2; }
+            50% { opacity: 1; }
+        }
+
+        /* 按钮组 */
+        .button-panel {
+            display: flex;
+            justify-content: center;
+            gap: 35px;
+            margin: 20px 0 20px;
+            flex-wrap: wrap;
+        }
+        .game-btn {
+            font-size: 1.8rem;
+            font-weight: bold;
+            padding: 12px 30px;
+            border: none;
+            border-radius: 70px;
+            background: #1f2a44;
+            color: white;
+            cursor: pointer;
+            transition: transform 0.08s, box-shadow 0.2s;
+            box-shadow: 0 6px 0 #0f1428;
+            font-family: inherit;
+            letter-spacing: 2px;
+            min-width: 140px;
+        }
+        .game-btn:active {
+            transform: translateY(3px);
+            box-shadow: 0 2px 0 #0f1428;
+        }
+        .btn-up {
+            background: linear-gradient(135deg, #f39c12, #e67e22);
+            box-shadow: 0 6px 0 #b45f1b;
+        }
+        .btn-down {
+            background: linear-gradient(135deg, #3498db, #2980b9);
+            box-shadow: 0 6px 0 #1c5a85;
+        }
+        .btn-correct {
+            background: linear-gradient(135deg, #2ecc71, #27ae60);
+            box-shadow: 0 6px 0 #1e6b3e;
+        }
+        .btn-reset {
+            background: linear-gradient(135deg, #9b59b6, #8e44ad);
+            box-shadow: 0 6px 0 #5e3370;
+            font-size: 1.2rem;
+            padding: 10px 28px;
+        }
+
+        /* 信息栏 */
+        .info-bar {
+            background: #0c1233b3;
+            border-radius: 48px;
+            padding: 14px 25px;
+            margin-top: 18px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 15px;
+            backdrop-filter: blur(6px);
+            border: 1px solid #3d699b;
+        }
+        .range-box {
+            background: #00000055;
+            border-radius: 36px;
+            padding: 6px 22px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: #cbe6ff;
+        }
+        .range-value {
+            color: #ffdfa5;
+            font-size: 1.5rem;
+            font-weight: bold;
+            margin-left: 8px;
+            font-family: monospace;
+        }
+        .counter {
+            background: #00000055;
+            border-radius: 36px;
+            padding: 6px 22px;
+            font-size: 1.1rem;
+            font-weight: 500;
+            color: #d4ecff;
+        }
+        .step-number {
+            color: #ffda88;
+            font-size: 1.6rem;
+            font-weight: bold;
+            margin-right: 5px;
+        }
+        .history-area {
+            background: #030c22aa;
+            border-radius: 40px;
+            padding: 8px 24px;
+            flex: 1;
+            min-width: 200px;
+            text-align: center;
+            font-size: 0.85rem;
+            color: #cfedff;
+        }
+        .history-text {
+            font-weight: 500;
+            letter-spacing: 0.3px;
+            max-height: 55px;
+            overflow-y: auto;
+            line-height: 1.3;
+        }
+
+        /* 规则弹窗 (简洁干净) */
+        .rules-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(15px);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 2000;
+            visibility: visible;
+            opacity: 1;
+            transition: all 0.25s ease;
+        }
+        .rules-card {
+            background: linear-gradient(145deg, #202a50, #12183c);
+            border-radius: 56px;
+            padding: 40px 50px;
+            max-width: 540px;
+            width: 85%;
+            text-align: center;
+            border: 1px solid #ffb347;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.6);
+        }
+        .rules-card h2 {
+            font-size: 2.2rem;
+            color: #ffd966;
+            margin-bottom: 24px;
+            font-weight: 700;
+            letter-spacing: 2px;
+        }
+        .rules-card p {
+            font-size: 1.2rem;
+            color: #f0f3ff;
+            margin: 18px 0;
+            line-height: 1.5;
+            text-align: left;
+        }
+        .rule-list {
+            text-align: left;
+            background: rgba(0,0,0,0.3);
+            padding: 18px 24px;
+            border-radius: 40px;
+            margin: 20px 0;
+        }
+        .rule-list li {
+            font-size: 1.05rem;
+            margin: 12px 0;
+            color: #e2ecff;
+            list-style-type: none;
+            padding-left: 24px;
+            position: relative;
+        }
+        .rule-list li::before {
+            content: "•";
+            color: #ffb347;
+            font-size: 1.4rem;
+            position: absolute;
+            left: 0;
+            top: -2px;
+        }
+        .start-game-btn {
+            background: #2ecc71;
+            border: none;
+            font-size: 1.4rem;
+            font-weight: bold;
+            padding: 12px 32px;
+            border-radius: 50px;
+            margin-top: 15px;
+            color: white;
+            cursor: pointer;
+            transition: 0.08s linear;
+            box-shadow: 0 5px 0 #1f8f4d;
+            width: 80%;
+        }
+        .start-game-btn:active {
+            transform: translateY(2px);
+            box-shadow: 0 2px 0 #1f8f4d;
+        }
+
+        /* 胜利弹窗 (美观整洁) */
+        .victory-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.75);
+            backdrop-filter: blur(12px);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            visibility: hidden;
+            opacity: 0;
+            transition: 0.2s;
+        }
+        .victory-card {
+            background: linear-gradient(145deg, #26335f, #151e42);
+            border-radius: 56px;
+            padding: 36px 48px;
+            text-align: center;
+            border: 1px solid #f7b731;
+            box-shadow: 0 0 50px rgba(255, 200, 70, 0.4);
+            max-width: 480px;
+            width: 80%;
+        }
+        .victory-card h2 {
+            font-size: 2.2rem;
+            color: #ffde9e;
+            margin-bottom: 18px;
+            font-weight: 700;
+        }
+        .victory-message-box {
+            background: rgba(0, 0, 0, 0.4);
+            padding: 20px 15px;
+            border-radius: 48px;
+            margin: 20px 0;
+        }
+        .victory-message-box p {
+            font-size: 1.4rem;
+            color: #ffffff;
+            font-weight: 500;
+            word-break: break-word;
+        }
+        .victory-stats {
+            font-size: 1.2rem;
+            color: #ffdd99;
+            margin-top: 8px;
+        }
+        .close-victory {
+            background: #f39c12;
+            border: none;
+            font-size: 1.3rem;
+            padding: 10px 28px;
+            border-radius: 50px;
+            font-weight: bold;
+            cursor: pointer;
+            color: #1e2a3a;
+            margin-top: 12px;
+            transition: 0.08s linear;
+            box-shadow: 0 3px 0 #b45f1b;
+        }
+        .close-victory:active {
+            transform: translateY(2px);
+            box-shadow: 0 1px 0 #b45f1b;
+        }
+
+        /* 辅助样式 */
+        footer {
+            font-size: 0.7rem;
+            text-align: center;
+            margin-top: 18px;
+            color: #9fb9dd;
+        }
+        button { touch-action: manipulation; }
+        .history-text::-webkit-scrollbar { width: 4px; }
+        .history-text::-webkit-scrollbar-thumb { background: #ffbf69; border-radius: 10px; }
+        body, html { overflow: hidden; height: 100%; }
+        @media (max-width: 1300px) {
+            .guess-number { font-size: 5.5rem; }
+            .game-btn { font-size: 1.5rem; padding: 10px 24px; min-width: 120px; }
+        }
+        @media (max-height: 750px) {
+            .game-container { padding: 18px 30px; }
+            .guess-number { font-size: 4.6rem; margin: 5px 0; }
+        }
+    </style>
+</head>
+<body>
+
+<!-- 规则弹窗：干净简洁 -->
+<div id="rulesModal" class="rules-modal">
+    <div class="rules-card">
+        <h2>数字炸弹</h2>
+        <div class="rule-list">
+            <li>心中默想一个 1 ~ 100 之间的整数</li>
+            <li>AI 会进行猜测，根据提示点击“大了”或“小了”</li>
+            <li>当 AI 猜中时，点击“猜对了”取得胜利</li>
+            <li>AI 使用二分法快速逼近，试试能多快被猜中</li>
+        </div>
+        <p style="text-align:center; font-size:0.95rem;">准备好了吗？点击开始挑战</p>
+        <button class="start-game-btn" id="startGameBtn">开始游戏</button>
+    </div>
+</div>
+
+<div class="game-container" style="opacity:0;">
+    <div class="header">
+        <div class="title">数字炸弹</div>
+        <div class="sub">心里想一个数字，AI 闪电猜中你的心</div>
+    </div>
+
+    <div class="ai-guess-area">
+        <div class="guess-label">AI 正在推理中</div>
+        <div class="guess-number" id="aiGuessDisplay">50</div>
+        <div class="thinking">
+            <span>二分算法 · 精准定位</span>
+            <span class="dot-flashing"></span>
+        </div>
+    </div>
+
+    <div class="button-panel">
+        <button class="game-btn btn-up" id="greaterBtn">大了</button>
+        <button class="game-btn btn-down" id="lessBtn">小了</button>
+        <button class="game-btn btn-correct" id="correctBtn">猜对了</button>
+    </div>
+
+    <div class="info-bar">
+        <div class="range-box">
+            当前区间 
+            <span class="range-value" id="rangeDisplay">1 - 100</span>
+        </div>
+        <div class="counter">
+            猜测次数 
+            <span class="step-number" id="stepCount">0</span>
+        </div>
+        <div class="history-area">
+            推理过程 
+            <div class="history-text" id="historyLog">等待游戏开始</div>
+        </div>
+    </div>
+    <div class="button-panel" style="margin-top: 5px; gap: 20px;">
+        <button class="game-btn btn-reset" id="resetGameBtn">新的一局 / 重置</button>
+    </div>
+    <footer>提示：心中默想数字后，根据AI猜测诚实点击“大了/小了”，AI会快速逼近答案</footer>
+</div>
+
+<!-- 胜利弹窗 -->
+<div id="victoryModal" class="victory-overlay">
+    <div class="victory-card">
+        <h2>炸弹拆除成功</h2>
+        <div class="victory-message-box">
+            <p id="victoryMessageText">AI 猜中了你的数字</p>
+            <div id="victoryStats" class="victory-stats"></div>
+        </div>
+        <button class="close-victory" id="closeVictoryBtn">继续挑战</button>
+    </div>
+</div>
+
+<script>
+    (function(){
+        /********** 游戏核心变量 **********/
+        let currentMin = 1;
+        let currentMax = 100;
+        let currentGuess = 50;
+        let step = 0;
+        let gameActive = true;
+        let historyMessages = [];
+        
+        // DOM 元素
+        const aiGuessSpan = document.getElementById('aiGuessDisplay');
+        const rangeDisplaySpan = document.getElementById('rangeDisplay');
+        const stepCountSpan = document.getElementById('stepCount');
+        const historyLogDiv = document.getElementById('historyLog');
+        const greaterBtn = document.getElementById('greaterBtn');
+        const lessBtn = document.getElementById('lessBtn');
+        const correctBtn = document.getElementById('correctBtn');
+        const resetBtn = document.getElementById('resetGameBtn');
+        const victoryModal = document.getElementById('victoryModal');
+        const closeVictoryBtn = document.getElementById('closeVictoryBtn');
+        const victoryMessageText = document.getElementById('victoryMessageText');
+        const victoryStatsSpan = document.getElementById('victoryStats');
+        
+        // 规则弹窗相关
+        const rulesModal = document.getElementById('rulesModal');
+        const startGameBtn = document.getElementById('startGameBtn');
+        const gameContainer = document.querySelector('.game-container');
+        
+        /********** UI 更新 **********/
+        function updateUI() {
+            aiGuessSpan.innerText = currentGuess;
+            rangeDisplaySpan.innerText = `${currentMin} - ${currentMax}`;
+            stepCountSpan.innerText = step;
+            if (historyMessages.length === 0) {
+                historyLogDiv.innerHTML = '✨ 等待 AI 第一次猜测';
+            } else {
+                let recent = historyMessages.slice(-7);
+                historyLogDiv.innerHTML = recent.map(msg => `• ${msg}`).join('<br>');
+            }
+        }
+        
+        function addHistory(msg) {
+            historyMessages.push(msg);
+            if (historyMessages.length > 10) historyMessages.shift();
+            updateUI();
+        }
+        
+        /********** AI 生成新猜测（二分法核心） **********/
+        function generateNewGuess() {
+            if (currentMin > currentMax) {
+                // 容错修复
+                let minVal = Math.min(currentMin, currentMax);
+                let maxVal = Math.max(currentMin, currentMax);
+                currentMin = Math.max(1, minVal);
+                currentMax = Math.min(100, maxVal);
+                if (currentMin > currentMax) {
+                    currentMin = 1;
+                    currentMax = 100;
+                }
+            }
+            let newGuess = Math.floor((currentMin + currentMax) / 2);
+            if (currentMin === currentMax) newGuess = currentMin;
+            newGuess = Math.min(currentMax, Math.max(currentMin, newGuess));
+            return newGuess;
+        }
+        
+        /********** 重置游戏（重新弹出规则页面） **********/
+        function fullResetWithRules() {
+            // 完全重置状态，并且重新显示规则弹窗 (游戏容器隐藏)
+            gameContainer.style.opacity = '0';
+            rulesModal.style.display = 'flex';
+            rulesModal.style.visibility = 'visible';
+            rulesModal.style.opacity = '1';
+            // 重置内部变量以便下次开始游戏时全新
+            resetGameInternal(true);
+            // 禁用游戏按钮（未开始时不可操作）
+            setButtonsEnabled(false);
+            // 清空多余历史
+            historyMessages = [];
+            updateUI();
+            // 确保胜利弹窗关闭
+            victoryModal.style.visibility = 'hidden';
+            victoryModal.style.opacity = '0';
+        }
+        
+        // 纯内部重置，不影响弹窗
+        function resetGameInternal(silent = false) {
+            gameActive = true;
+            currentMin = 1;
+            currentMax = 100;
+            step = 0;
+            currentGuess = 50;
+            if (!silent) {
+                historyMessages = [];
+                addHistory("新回合，心里重新想一个数字");
+            } else {
+                historyMessages = [];
+            }
+            updateUI();
+        }
+        
+        // 启用/禁用游戏按钮
+        function setButtonsEnabled(enabled) {
+            const btns = [greaterBtn, lessBtn, correctBtn];
+            btns.forEach(btn => {
+                if (enabled) {
+                    btn.removeAttribute('disabled');
+                    btn.style.opacity = '1';
+                    btn.style.cursor = 'pointer';
+                } else {
+                    btn.setAttribute('disabled', 'disabled');
+                    btn.style.opacity = '0.5';
+                    btn.style.cursor = 'not-allowed';
+                }
+            });
+        }
+        
+        /********** 游戏核心逻辑 **********/
+        function handleGreater() {
+            if (!gameActive) return;
+            if (currentGuess > currentMax || currentGuess < currentMin) {
+                addHistory(`⚠️ 修复异常区间`);
+                if (currentGuess > currentMax) currentMax = currentGuess - 1;
+                if (currentGuess < currentMin) currentMin = currentGuess + 1;
+                if (currentMin > currentMax) { fullResetWithRules(); return; }
+                currentGuess = generateNewGuess();
+                updateUI();
+                return;
+            }
+            let newMax = currentGuess - 1;
+            if (newMax < currentMin) {
+                addHistory(`❌ 矛盾：区间内没有更小的数字，请重置`);
+                gameActive = false;
+                setButtonsEnabled(false);
+                return;
+            }
+            currentMax = newMax;
+            step++;
+            addHistory(`AI 猜 ${currentGuess} → 大了 → 区间 [${currentMin}~${currentMax}]`);
+            if (currentMin === currentMax) {
+                currentGuess = currentMin;
+                updateUI();
+                addHistory(`区间仅剩数字 ${currentGuess}，可点击“猜对了”`);
+            } else {
+                currentGuess = generateNewGuess();
+                updateUI();
+            }
+            if (currentMin > currentMax) { gameActive = false; setButtonsEnabled(false); addHistory("区间出错，请重置"); }
+        }
+        
+        function handleLess() {
+            if (!gameActive) return;
+            if (currentGuess > currentMax || currentGuess < currentMin) {
+                addHistory(`🔄 修正越界`);
+                if (currentGuess < currentMin) currentMin = currentGuess + 1;
+                if (currentGuess > currentMax) currentMax = currentGuess - 1;
+                if (currentMin > currentMax) { fullResetWithRules(); return; }
+                currentGuess = generateNewGuess();
+                updateUI();
+                return;
+            }
+            let newMin = currentGuess + 1;
+            if (newMin > currentMax) {
+                addHistory(`❌ 矛盾：区间内没有更大的数字，请重置`);
+                gameActive = false;
+                setButtonsEnabled(false);
+                return;
+            }
+            currentMin = newMin;
+            step++;
+            addHistory(`AI 猜 ${currentGuess} → 小了 → 区间 [${currentMin}~${currentMax}]`);
+            if (currentMin === currentMax) {
+                currentGuess = currentMin;
+                updateUI();
+                addHistory(`区间仅剩数字 ${currentGuess}，点击“猜对了”胜利`);
+            } else {
+                currentGuess = generateNewGuess();
+                updateUI();
+            }
+            if (currentMin > currentMax) { gameActive = false; setButtonsEnabled(false); addHistory("区间错误，请重置"); }
+        }
+        
+        function handleCorrect() {
+            if (!gameActive) return;
+            step++;
+            updateUI();
+            gameActive = false;
+            setButtonsEnabled(false);
+            victoryMessageText.innerText = `🎯 命中数字 ${currentGuess}  🎯`;
+            victoryStatsSpan.innerHTML = `AI 共猜测 ${step} 次 精准命中`;
+            victoryModal.style.visibility = 'visible';
+            victoryModal.style.opacity = '1';
+            addHistory(`🎉 胜利！AI ${step} 次猜中数字 ${currentGuess}`);
+        }
+        
+        // 关闭胜利弹窗并重置游戏（弹出规则页）
+        function closeVictoryAndResetToRules() {
+            victoryModal.style.visibility = 'hidden';
+            victoryModal.style.opacity = '0';
+            fullResetWithRules();
+        }
+        
+        /********** 开始游戏（从规则页启动） **********/
+        function startGame() {
+            // 隐藏规则弹窗，显示游戏容器
+            rulesModal.style.visibility = 'hidden';
+            rulesModal.style.opacity = '0';
+            rulesModal.style.display = 'none';
+            gameContainer.style.opacity = '1';
+            // 重置内部状态（干净）
+            gameActive = true;
+            currentMin = 1;
+            currentMax = 100;
+            step = 0;
+            currentGuess = 50;
+            historyMessages = [];
+            addHistory("游戏开始！心中想好数字，AI即将展开推理");
+            updateUI();
+            setButtonsEnabled(true);
+            victoryModal.style.visibility = 'hidden';
+            victoryModal.style.opacity = '0';
+        }
+        
+        /********** 按钮事件绑定 **********/
+        greaterBtn.addEventListener('click', handleGreater);
+        lessBtn.addEventListener('click', handleLess);
+        correctBtn.addEventListener('click', handleCorrect);
+        resetBtn.addEventListener('click', () => {
+            fullResetWithRules();
+        });
+        closeVictoryBtn.addEventListener('click', closeVictoryAndResetToRules);
+        victoryModal.addEventListener('click', (e) => {
+            if (e.target === victoryModal) closeVictoryAndResetToRules();
+        });
+        startGameBtn.addEventListener('click', startGame);
+        
+        /********** 初始状态：规则弹窗显示，游戏不可交互 **********/
+        gameContainer.style.opacity = '0';
+        setButtonsEnabled(false);
+        resetGameInternal(true);
+        updateUI();
+        rulesModal.style.display = 'flex';
+        rulesModal.style.visibility = 'visible';
+        rulesModal.style.opacity = '1';
+    })();
+</script>
+</body>
+</html>
