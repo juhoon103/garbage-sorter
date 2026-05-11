@@ -221,7 +221,7 @@
             white-space: nowrap;
         }
 
-        /* 规则弹窗 (紧凑适配) */
+        /* 规则弹窗 (紧凑适配，文字亮度优化) */
         .rules-modal {
             position: fixed;
             top: 0;
@@ -276,6 +276,20 @@
             left: 0;
             top: -2px;
         }
+        /* 优化底部提示文字亮度，确保清晰可见 */
+        .rules-card .ready-text {
+            text-align: center;
+            font-size: 1rem;
+            font-weight: 500;
+            color: #FFE484;
+            background: rgba(0, 0, 0, 0.35);
+            display: inline-block;
+            padding: 6px 18px;
+            border-radius: 40px;
+            margin-top: 8px;
+            letter-spacing: 0.5px;
+            text-shadow: 0 0 2px rgba(0,0,0,0.5);
+        }
         .start-game-btn {
             background: #2ecc71;
             border: none;
@@ -283,11 +297,12 @@
             font-weight: bold;
             padding: 10px 28px;
             border-radius: 50px;
-            margin-top: 12px;
+            margin-top: 18px;
             color: white;
             cursor: pointer;
             box-shadow: 0 4px 0 #1f8f4d;
             width: 70%;
+            transition: 0.05s linear;
         }
         .start-game-btn:active {
             transform: translateY(2px);
@@ -396,7 +411,7 @@
 </head>
 <body>
 
-<!-- 规则弹窗 -->
+<!-- 规则弹窗 - 底部文字亮度已优化 -->
 <div id="rulesModal" class="rules-modal">
     <div class="rules-card">
         <h2>数字炸弹</h2>
@@ -406,7 +421,8 @@
             <li>当 AI 猜中时，点击“猜对了”取得胜利</li>
             <li>AI 使用二分法快速逼近，试试能多快被猜中</li>
         </div>
-        <p style="text-align:center; font-size:0.9rem;">准备好挑战AI的猜心术了吗？</p>
+        <!-- 优化亮度：改为亮黄色加背景光晕，清晰可见 -->
+        <div class="ready-text">✨ 准备好挑战AI的猜心术了吗？ ✨</div>
         <button class="start-game-btn" id="startGameBtn">开始游戏</button>
     </div>
 </div>
