@@ -2,7 +2,7 @@
 <html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <title>垃圾分类小能手 - 科技节AI挑战赛</title>
     <style>
         * {
@@ -12,234 +12,221 @@
             user-select: none;
         }
 
-        /* 明亮清新的背景 */
-        body {
-            min-height: 100vh;
+        /* 背景占满全屏 */
+        html, body {
+            width: 100%;
+            height: 100%;
             background: linear-gradient(145deg, #c7e9d0 0%, #b8dfc4 100%);
+            overflow: hidden;  /* 禁止页面滚动 */
+        }
+
+        body {
             display: flex;
             justify-content: center;
             align-items: center;
             font-family: 'Segoe UI', 'Comic Neue', 'Fredoka One', 'Quicksand', system-ui, sans-serif;
-            padding: 30px;
         }
 
-        /* 针对平板大屏幕优化容器宽度 */
-        .game-container {
-            max-width: 1400px;
+        /* 使用缩放容器：根据屏幕高度自动缩放，保证一屏完整显示 */
+        .game-scale-wrapper {
             width: 100%;
-            background: #fffef7;
-            border-radius: 80px 80px 70px 70px;
-            box-shadow: 0 30px 45px rgba(0, 0, 0, 0.15), inset 0 1px 3px rgba(255,255,240,0.8);
-            overflow: hidden;
-            transition: transform 0.2s;
+            height: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            /* 使用视口单位，基于高度缩放，最大宽度为1200px */
+            transform: scale(var(--scale-ratio));
         }
 
-        /* 卡通风格标题 - 加大 */
+        /* 游戏基准尺寸（设计稿宽度1100px，高度约900px，适合平板横屏） */
+        .game-container {
+            width: 1100px;
+            background: #fffef7;
+            border-radius: 60px 60px 50px 50px;
+            box-shadow: 0 25px 40px rgba(0, 0, 0, 0.2);
+            overflow: hidden;
+        }
+
+        /* 标题 */
         .game-title {
             background: #f5b342;
             text-align: center;
-            padding: 24px 20px 18px;
-            font-size: 3.2rem;
+            padding: 20px 20px 16px;
+            font-size: 2.6rem;
             font-weight: 800;
             letter-spacing: 4px;
             color: #fff2b5;
-            text-shadow: 5px 5px 0 #c46f1a;
+            text-shadow: 4px 4px 0 #c46f1a;
             font-family: 'Fredoka One', 'Comic Neue', cursive;
             border-bottom: 5px solid #ffdb9f;
         }
 
+        /* 头部区域 */
         .game-header {
             background: #ffecb3;
-            padding: 20px 35px;
+            padding: 16px 30px;
             display: flex;
             justify-content: space-between;
             align-items: center;
             flex-wrap: wrap;
-            gap: 20px;
+            gap: 15px;
             border-bottom: 4px solid #ffcf7a;
         }
 
         .score-board {
             background: #2f6b47;
-            padding: 12px 30px;
+            padding: 8px 25px;
             border-radius: 60px;
             color: #fff0bf;
             font-weight: bold;
-            font-size: 1.9rem;
-            box-shadow: inset 0 -2px 0 #1f4a30, 0 5px 12px rgba(0,0,0,0.08);
+            font-size: 1.5rem;
+            box-shadow: inset 0 -2px 0 #1f4a30;
         }
-        .score-board span { font-size: 2.4rem; color: #ffe082; margin-right: 8px; }
+        .score-board span { 
+            font-size: 2rem; 
+            color: #ffe082; 
+            margin-right: 8px;
+        }
 
         .question-counter {
             background: #fff6e0;
-            padding: 10px 28px;
+            padding: 8px 22px;
             border-radius: 50px;
             font-weight: bold;
-            font-size: 1.5rem;
+            font-size: 1.3rem;
             color: #c2801a;
-            box-shadow: inset 0 0 0 2px white, 0 2px 8px rgba(0,0,0,0.08);
+            box-shadow: inset 0 0 0 2px white;
         }
 
+        /* 主游戏区 */
         .game-main {
-            padding: 40px 35px 45px;
+            padding: 25px 30px 30px;
             text-align: center;
         }
 
+        /* 图片卡片 */
         .image-card {
             background: white;
-            border-radius: 80px;
-            padding: 30px 20px;
-            margin-bottom: 30px;
-            box-shadow: 0 18px 28px rgba(0, 0, 0, 0.08);
+            border-radius: 70px;
+            padding: 20px 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 12px 20px rgba(0, 0, 0, 0.08);
             border: 1px solid #ffe3bc;
         }
 
-        /* 图片在平板上放大到 360px */
+        /* 垃圾图片 */
         .garbage-img {
-            width: 360px;
-            height: 360px;
+            width: 260px;
+            height: 260px;
             object-fit: contain;
             background: #fef7e8;
-            border-radius: 70px;
-            padding: 20px;
-            transition: all 0.2s;
-            filter: drop-shadow(10px 15px 18px rgba(0,0,0,0.12));
+            border-radius: 60px;
+            padding: 15px;
+            filter: drop-shadow(8px 12px 14px rgba(0,0,0,0.12));
         }
 
-        /* 垃圾名字稍微调大一点 (但相对图片还是显得小) */
+        /* 垃圾名称 */
         .question-name {
-            font-size: 1.9rem;
+            font-size: 1.4rem;
             font-weight: 700;
-            margin-top: 18px;
+            margin-top: 12px;
             color: #4a3a28;
             background: #fff0dd;
             display: inline-block;
-            padding: 8px 32px;
-            border-radius: 70px;
-            letter-spacing: 2px;
+            padding: 6px 28px;
+            border-radius: 60px;
         }
 
+        /* 反馈区域 */
         .feedback {
-            margin: 20px 0 18px;
-            font-size: 1.5rem;
+            margin: 15px 0 12px;
+            font-size: 1.1rem;
             font-weight: 600;
-            min-height: 90px;
-            padding: 15px 24px;
+            min-height: 65px;
+            padding: 10px 18px;
             background: #eff7ea;
-            border-radius: 70px;
+            border-radius: 60px;
             color: #357a47;
             display: flex;
             align-items: center;
             justify-content: center;
-            gap: 16px;
-            transition: 0.2s;
+            gap: 12px;
             flex-wrap: wrap;
         }
 
+        /* 分类按钮区域 */
         .categories {
             display: flex;
             flex-wrap: wrap;
             justify-content: center;
-            gap: 25px;
-            margin: 30px 0 25px;
+            gap: 18px;
+            margin: 20px 0 15px;
         }
 
         .cat-btn {
-            flex: 1 1 180px;
+            flex: 1 1 150px;
             background: white;
             border: none;
-            padding: 18px 12px;
-            border-radius: 120px;
+            padding: 12px 8px;
+            border-radius: 100px;
             font-weight: bold;
-            font-size: 1.3rem;
+            font-size: 1rem;
             cursor: pointer;
-            transition: 0.12s linear;
+            transition: 0.1s linear;
             display: flex;
             align-items: center;
             justify-content: center;
-            gap: 12px;
-            box-shadow: 0 6px 0 #bfb28b;
+            gap: 10px;
+            box-shadow: 0 5px 0 #bfb28b;
             font-family: inherit;
         }
-        .cat-btn:active { transform: translateY(4px); box-shadow: 0 2px 0 #bfb28b; }
-        .cat-btn img { width: 32px; height: 32px; pointer-events: none; }
+        .cat-btn:active { transform: translateY(3px); box-shadow: 0 2px 0 #bfb28b; }
 
-        .cat-recyclable { background: #d4efff; color: #0077a3; border-bottom: 4px solid #4aa3d4; }
-        .cat-kitchen { background: #e0f5cf; color: #417d2c; border-bottom: 4px solid #7fc45a; }
-        .cat-harmful { background: #ffe2e2; color: #c24b4b; border-bottom: 4px solid #ed7a7a; }
-        .cat-other { background: #f7ecdb; color: #a57c4c; border-bottom: 4px solid #dba768; }
+        .cat-recyclable { background: #d4efff; color: #0077a3; border-bottom: 3px solid #4aa3d4; }
+        .cat-kitchen { background: #e0f5cf; color: #417d2c; border-bottom: 3px solid #7fc45a; }
+        .cat-harmful { background: #ffe2e2; color: #c24b4b; border-bottom: 3px solid #ed7a7a; }
+        .cat-other { background: #f7ecdb; color: #a57c4c; border-bottom: 3px solid #dba768; }
 
+        /* 重置按钮 */
         .reset-btn {
             background: #f3bc6d;
             border: none;
-            margin-top: 15px;
-            margin-bottom: 10px;
-            padding: 14px 38px;
+            margin-top: 12px;
+            margin-bottom: 8px;
+            padding: 10px 35px;
             border-radius: 60px;
             font-weight: bold;
-            font-size: 1.3rem;
-            cursor: pointer;
-            transition: 0.2s;
-            color: #3b2f1e;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
-        }
-        .reset-btn:hover { background: #ffcf86; transform: scale(0.97);}
-
-        .footer {
-            padding: 16px 25px 28px;
-            text-align: center;
             font-size: 1.1rem;
+            cursor: pointer;
+            color: #3b2f1e;
+            box-shadow: 0 3px 8px rgba(0,0,0,0.1);
+        }
+        .reset-btn:hover { background: #ffcf86; }
+
+        /* 底部 */
+        .footer {
+            padding: 10px 20px 18px;
+            text-align: center;
+            font-size: 0.8rem;
             color: #9b7e5a;
             background: #fffef7;
-            letter-spacing: 1.5px;
-            font-weight: normal;
-            font-family: 'Segoe UI', monospace;
         }
 
-        /* 平板竖屏或中等屏幕适配 */
-        @media (max-width: 1200px) {
-            .game-container { max-width: 1000px; }
-            .garbage-img { width: 300px; height: 300px; }
-            .cat-btn { flex: 1 1 150px; font-size: 1.1rem; padding: 14px 8px; }
-            .feedback { font-size: 1.3rem; }
-            .game-title { font-size: 2.8rem; }
-        }
-
-        @media (max-width: 900px) {
-            .garbage-img { width: 250px; height: 250px; }
-            .cat-btn { flex: 1 1 130px; font-size: 1rem; padding: 12px 6px; }
-            .feedback { font-size: 1.1rem; }
-            .game-title { font-size: 2.3rem; }
-            .score-board { font-size: 1.5rem; }
-            .question-counter { font-size: 1.2rem; }
-            .question-name { font-size: 1.5rem; }
-        }
-
-        @media (max-width: 650px) {
-            .cat-btn { flex: 1 1 110px; font-size: 0.8rem; padding: 10px 4px; }
-            .garbage-img { width: 200px; height: 200px; }
-            .score-board { font-size: 1.2rem; }
-            .question-name { font-size: 1.2rem; }
-            .feedback { font-size: 0.95rem; }
-            .footer { font-size: 0.75rem; }
-            .game-title { font-size: 2rem; padding: 14px 16px 10px; }
-        }
-        @media (max-width: 480px) {
-            .garbage-img { width: 170px; height: 170px; }
-        }
         .disabled-btn {
             pointer-events: none;
             opacity: 0.65;
             filter: grayscale(0.1);
             transform: none !important;
         }
+
+        /* 弹窗样式 */
         .modal-win {
             position: fixed;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-            background: rgba(0,0,0,0.7);
+            background: rgba(0,0,0,0.75);
             backdrop-filter: blur(6px);
             display: flex;
             justify-content: center;
@@ -254,59 +241,60 @@
             opacity: 1;
         }
         .win-card {
-            max-width: 550px;
+            max-width: 500px;
             background: #fffef2;
-            border-radius: 80px;
-            padding: 45px 40px 55px;
+            border-radius: 70px;
+            padding: 35px 40px 45px;
             text-align: center;
-            box-shadow: 0 30px 50px rgba(0,0,0,0.3);
+            box-shadow: 0 25px 45px rgba(0,0,0,0.3);
             animation: bouncePop 0.4s ease-out;
         }
         @keyframes bouncePop {
             0% { transform: scale(0.7); opacity: 0; }
             100% { transform: scale(1); opacity: 1; }
         }
-        .win-card h2 { font-size: 3rem; color: #f5a623; margin-bottom: 18px; }
-        .win-card p { font-size: 1.4rem; margin: 16px 0; }
+        .win-card h2 { font-size: 2.5rem; color: #f5a623; margin-bottom: 15px; }
+        .win-card p { font-size: 1.1rem; margin: 12px 0; }
         .win-card button {
             background: #56ab56;
             border: none;
-            padding: 15px 42px;
-            font-size: 1.4rem;
-            border-radius: 60px;
+            padding: 12px 35px;
+            font-size: 1.2rem;
+            border-radius: 50px;
             color: white;
             font-weight: bold;
             cursor: pointer;
-            margin-top: 18px;
-            transition: 0.2s;
+            margin-top: 15px;
         }
     </style>
 </head>
 <body>
-<div class="game-container">
-    <div class="game-title">🗑️ 垃圾分类小能手 ♻️</div>
-    <div class="game-header">
-        <div class="score-board">🏆 积分 <span id="scoreValue">0</span> / 5</div>
-        <div class="question-counter">📋 第 <span id="currentQNumber">1</span> / 5 关</div>
-    </div>
-    <div class="game-main">
-        <div class="image-card">
-            <img id="garbageImage" class="garbage-img" src="" alt="生活垃圾">
-            <div class="question-name" id="itemNameDisplay">加载中...</div>
+<div class="game-scale-wrapper" id="scaleWrapper">
+    <div class="game-container">
+        <div class="game-title">🗑️ 垃圾分类小能手 ♻️</div>
+        <div class="game-header">
+            <div class="score-board">🏆 积分 <span id="scoreValue">0</span> / 5</div>
+            <div class="question-counter">📋 第 <span id="currentQNumber">1</span> / 5 关</div>
         </div>
-        <div class="feedback" id="feedbackMsg">
-            🤖 AI 视觉识别已启动！点击下方分类桶，答对5种不同垃圾即可通关 🌟
+        <div class="game-main">
+            <div class="image-card">
+                <img id="garbageImage" class="garbage-img" src="" alt="生活垃圾">
+                <div class="question-name" id="itemNameDisplay">加载中...</div>
+            </div>
+            <div class="feedback" id="feedbackMsg">
+                🤖 AI 视觉识别已启动！点击下方分类桶，答对5种不同垃圾即可通关 🌟
+            </div>
+            <div class="categories" id="categoriesGroup">
+                <button class="cat-btn cat-recyclable" data-type="recyclable">♻️ 可回收物</button>
+                <button class="cat-btn cat-kitchen" data-type="kitchen">🍂 厨余垃圾</button>
+                <button class="cat-btn cat-harmful" data-type="harmful">⚠️ 有害垃圾</button>
+                <button class="cat-btn cat-other" data-type="other">🗑️ 其他垃圾</button>
+            </div>
+            <button id="resetGameBtn" class="reset-btn">🔄 重新挑战</button>
         </div>
-        <div class="categories" id="categoriesGroup">
-            <button class="cat-btn cat-recyclable" data-type="recyclable">♻️ 可回收物</button>
-            <button class="cat-btn cat-kitchen" data-type="kitchen">🍂 厨余垃圾</button>
-            <button class="cat-btn cat-harmful" data-type="harmful">⚠️ 有害垃圾</button>
-            <button class="cat-btn cat-other" data-type="other">🗑️ 其他垃圾</button>
+        <div class="footer">
+            🌍 环保小先锋
         </div>
-        <button id="resetGameBtn" class="reset-btn">🔄 重新挑战</button>
-    </div>
-    <div class="footer">
-        🌍 环保小先锋
     </div>
 </div>
 <div id="winModal" class="modal-win">
@@ -319,34 +307,56 @@
 </div>
 
 <script>
+    // ---------- 屏幕自适应缩放 ----------
+    function updateScale() {
+        const wrapper = document.getElementById('scaleWrapper');
+        const container = document.querySelector('.game-container');
+        if (!wrapper || !container) return;
+        
+        // 获取屏幕宽高
+        const screenWidth = window.innerWidth;
+        const screenHeight = window.innerHeight;
+        
+        // 游戏基准尺寸（设计宽度1100px，高度约850px）
+        const baseWidth = 1100;
+        const baseHeight = 850;
+        
+        // 计算宽高缩放比例，取较小值确保完全显示
+        const scaleX = screenWidth / baseWidth;
+        const scaleY = screenHeight / baseHeight;
+        const scale = Math.min(scaleX, scaleY, 1.2); // 最大放大不超过1.2倍
+        
+        // 应用缩放
+        wrapper.style.setProperty('--scale-ratio', scale);
+        wrapper.style.transform = `scale(${scale})`;
+    }
+    
+    // 监听窗口变化
+    window.addEventListener('resize', updateScale);
+    window.addEventListener('load', updateScale);
+    
     // ---------- 丰富题库 (每种分类至少三种垃圾，共12个不同物品) ----------
     const FULL_LIBRARY = [
-        // 可回收物
         { id: 1, name: "塑料瓶", displayName: "🥤 塑料瓶", category: "recyclable", emoji: "🧴", fact: "塑料瓶回收后可制成新瓶子或衣服纤维" },
         { id: 2, name: "玻璃瓶", displayName: "🍾 玻璃瓶", category: "recyclable", emoji: "🥃", fact: "玻璃瓶可以无限循环再造" },
         { id: 3, name: "易拉罐", displayName: "🥫 易拉罐", category: "recyclable", emoji: "🥫", fact: "铝制易拉罐回收节能95%" },
-        // 厨余垃圾
         { id: 4, name: "苹果核", displayName: "🍎 苹果核", category: "kitchen", emoji: "🍎", fact: "厨余垃圾可做成有机肥料" },
         { id: 5, name: "香蕉皮", displayName: "🍌 香蕉皮", category: "kitchen", emoji: "🍌", fact: "香蕉皮是很好的堆肥材料" },
         { id: 6, name: "剩菜剩饭", displayName: "🍚 剩菜剩饭", category: "kitchen", emoji: "🍲", fact: "厨余垃圾通过厌氧发酵能产生沼气" },
-        // 有害垃圾
         { id: 7, name: "废旧电池", displayName: "🔋 废旧电池", category: "harmful", emoji: "🔋", fact: "一粒纽扣电池可污染60万升水" },
         { id: 8, name: "过期药品", displayName: "💊 过期药品", category: "harmful", emoji: "💊", fact: "过期药品不可随意丢弃，需特殊处理" },
         { id: 9, name: "废荧光灯管", displayName: "💡 废灯管", category: "harmful", emoji: "💡", fact: "灯管含汞，对环境和健康有害" },
-        // 其他垃圾
         { id: 10, name: "纸巾", displayName: "🧻 纸巾", category: "other", emoji: "🧻", fact: "用过的纸巾不可回收，属于其他垃圾" },
         { id: 11, name: "一次性餐具", displayName: "🥢 一次性餐具", category: "other", emoji: "🥢", fact: "受污染的一次性餐具不可回收" },
         { id: 12, name: "脏污塑料袋", displayName: "🛍️ 脏塑料袋", category: "other", emoji: "🛍️", fact: "受污染塑料袋属于其他垃圾" }
     ];
 
-    // 游戏状态 (无计时器)
     let currentRoundQuestions = [];
     let currentIndex = 0;
     let score = 0;
     let gameActive = true;
     let waitingForNext = false;
 
-    // DOM 元素
     const scoreSpan = document.getElementById('scoreValue');
     const currentQNumberSpan = document.getElementById('currentQNumber');
     const garbageImage = document.getElementById('garbageImage');
@@ -357,7 +367,6 @@
     const winModal = document.getElementById('winModal');
     const closeWinBtn = document.getElementById('closeWinBtn');
 
-    // 辅助：随机抽取N个不同元素
     function getRandomQuestions(count) {
         if (count > FULL_LIBRARY.length) count = FULL_LIBRARY.length;
         const shuffled = [...FULL_LIBRARY];
@@ -368,7 +377,6 @@
         return shuffled.slice(0, count);
     }
 
-    // 生成图片SVG（已彻底去掉“点击分类”的文字）
     function generateSvgForItem(item) {
         const bgColors = {
             recyclable: "#E8F5FB",
@@ -387,13 +395,8 @@
         return 'data:image/svg+xml,' + encodeURIComponent(svgString);
     }
 
-    function updateScoreUI() {
-        scoreSpan.innerText = score;
-    }
-
-    function updateQuestionNumberUI() {
-        currentQNumberSpan.innerText = currentIndex + 1;
-    }
+    function updateScoreUI() { scoreSpan.innerText = score; }
+    function updateQuestionNumberUI() { currentQNumberSpan.innerText = currentIndex + 1; }
 
     function winGame() {
         if (!gameActive) return;
@@ -436,19 +439,14 @@
         return map[type] || "其他垃圾";
     }
 
-    // 回答处理: 科普停留时间增加1秒（正确延迟1850ms / 错误2300ms）
     async function handleAnswer(selectedType) {
         if (!gameActive || waitingForNext) return;
-        if (score >= 5) {
-            winGame();
-            return;
-        }
+        if (score >= 5) { winGame(); return; }
         if (currentIndex >= currentRoundQuestions.length) return;
 
         const currentItem = currentRoundQuestions[currentIndex];
         const isCorrect = (selectedType === currentItem.category);
 
-        // AI识别动效
         feedbackDiv.innerHTML = "🤖 AI 图像识别中... 🔍 分析垃圾特征";
         feedbackDiv.style.backgroundColor = "#f5e9d3";
         await new Promise(resolve => setTimeout(resolve, 200));
@@ -464,9 +462,7 @@
             if (score >= 5) {
                 waitingForNext = true;
                 enableButtons(false);
-                setTimeout(() => {
-                    if (gameActive) winGame();
-                }, 1850);
+                setTimeout(() => { if (gameActive) winGame(); }, 1850);
                 return;
             }
 
@@ -508,7 +504,6 @@
 
     function initGame() {
         currentRoundQuestions = getRandomQuestions(5);
-        // 打乱顺序
         for (let i = currentRoundQuestions.length - 1; i > 0; i--) {
             const j = Math.floor(Math.random() * (i + 1));
             [currentRoundQuestions[i], currentRoundQuestions[j]] = [currentRoundQuestions[j], currentRoundQuestions[i]];
@@ -517,13 +512,11 @@
         score = 0;
         gameActive = true;
         waitingForNext = false;
-
         updateScoreUI();
         updateQuestionNumberUI();
         enableButtons(true);
         loadCurrentQuestion();
         winModal.classList.remove('active');
-        // 删除了“每类垃圾有丰富题库，”这几个字，保持简洁
         feedbackDiv.innerHTML = "🤖 AI 视觉识别已开启！答对5种不同物品即可通关~ 🌈";
         feedbackDiv.style.backgroundColor = "#eff7ea";
         feedbackDiv.style.color = "#357a47";
@@ -536,14 +529,8 @@
                 handleAnswer(catType);
             });
         });
-        resetBtn.addEventListener('click', () => {
-            if (window._resetTimer) clearTimeout(window._resetTimer);
-            initGame();
-        });
-        closeWinBtn.addEventListener('click', () => {
-            winModal.classList.remove('active');
-            initGame();
-        });
+        resetBtn.addEventListener('click', () => { initGame(); });
+        closeWinBtn.addEventListener('click', () => { winModal.classList.remove('active'); initGame(); });
     }
 
     bindEvents();
