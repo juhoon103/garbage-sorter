@@ -1,0 +1,784 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>逻辑规律挑战 | 年级专属AI谜题 - 图形数字推理</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            user-select: none;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            background: linear-gradient(135deg, #FEF7E6 0%, #FFF3E0 50%, #FFEFD6 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: 'Segoe UI', 'Poppins', 'Inter', system-ui, -apple-system, sans-serif;
+            padding: 20px;
+            overflow: hidden;
+        }
+
+        .game-container {
+            width: 100%;
+            max-width: 1300px;
+            height: auto;
+            background: rgba(255, 252, 240, 0.96);
+            border-radius: 56px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.08), 0 4px 12px rgba(0, 0, 0, 0.05);
+            padding: 24px 36px 28px 36px;
+            transition: all 0.2s;
+            border: 1px solid #FFE6B3;
+        }
+
+        @media (min-width: 1600px) {
+            .game-container {
+                max-width: 1220px;
+                padding: 22px 32px 26px 32px;
+            }
+        }
+
+        .game-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            margin-bottom: 18px;
+            background: #FFF9EF;
+            border-radius: 60px;
+            padding: 8px 24px;
+            border: 1px solid #FFE2B5;
+            gap: 15px;
+        }
+
+        .title-area {
+            display: flex;
+            align-items: baseline;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+
+        .game-title {
+            font-size: 1.7rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, #E67E22, #F39C12);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            letter-spacing: 1px;
+        }
+
+        .ai-badge {
+            background: #FFEDD5;
+            padding: 5px 18px;
+            border-radius: 50px;
+            font-size: 0.85rem;
+            font-weight: 700;
+            color: #D97706;
+            border-left: 3px solid #F59E0B;
+        }
+
+        .grade-selector {
+            background: #FFF3E2;
+            padding: 5px 20px;
+            border-radius: 50px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        .grade-selector label {
+            font-weight: 600;
+            color: #B45F1B;
+            font-size: 0.9rem;
+        }
+        .grade-selector select {
+            background: white;
+            border: 1px solid #F5C174;
+            border-radius: 40px;
+            padding: 6px 12px;
+            font-weight: 500;
+            color: #D97706;
+            font-size: 0.9rem;
+            cursor: pointer;
+            outline: none;
+        }
+
+        .score-board {
+            background: #FFF3E2;
+            padding: 5px 22px;
+            border-radius: 50px;
+            display: flex;
+            gap: 28px;
+            align-items: center;
+        }
+
+        .score-item {
+            display: flex;
+            gap: 6px;
+            align-items: baseline;
+            font-size: 1.2rem;
+            color: #B45F1B;
+        }
+
+        .score-label {
+            font-size: 0.85rem;
+            font-weight: 500;
+            color: #C2782A;
+        }
+
+        .score-value {
+            font-size: 1.9rem;
+            font-weight: 800;
+            color: #F5A623;
+            line-height: 1;
+        }
+
+        .stars-progress {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+        }
+
+        .star {
+            font-size: 1.5rem;
+            transition: 0.2s;
+        }
+
+        .star.active {
+            color: #F5A623;
+            text-shadow: 0 0 4px #FFD58C;
+        }
+
+        .star.inactive {
+            color: #E2C8A3;
+        }
+
+        .pattern-area {
+            background: #FFFBF5;
+            border-radius: 42px;
+            padding: 18px 20px;
+            margin: 12px 0 18px;
+            border: 1px solid #FFE9CD;
+        }
+
+        .sequence-title {
+            text-align: center;
+            font-size: 1.05rem;
+            font-weight: 600;
+            color: #D9892B;
+            margin-bottom: 14px;
+            letter-spacing: 1px;
+        }
+
+        .sequence-display {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            align-items: center;
+            gap: 18px;
+            row-gap: 12px;
+        }
+
+        .pattern-item {
+            background: white;
+            border-radius: 32px;
+            padding: 12px 18px;
+            min-width: 100px;
+            min-height: 110px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.04);
+            border: 1px solid #FFE1B6;
+        }
+
+        .pattern-svg {
+            width: 72px;
+            height: 72px;
+            display: block;
+        }
+
+        .pattern-number, .pattern-word {
+            font-size: 1.9rem;
+            font-weight: 700;
+            color: #E67E22;
+            text-align: center;
+        }
+
+        .pattern-word {
+            font-size: 1.3rem;
+            font-weight: 600;
+        }
+
+        .question-item {
+            background: #FFF7E8;
+            border: 1.5px dashed #F5A623;
+        }
+
+        .question-mark-symbol {
+            font-size: 2rem;
+            font-weight: 700;
+            color: #F5A623;
+        }
+
+        .options-area {
+            margin: 14px 0 18px;
+        }
+
+        .options-label {
+            text-align: center;
+            font-size: 0.9rem;
+            font-weight: 600;
+            margin-bottom: 12px;
+            color: #B55F1A;
+            background: #FFEFDE;
+            display: inline-block;
+            width: auto;
+            padding: 5px 26px;
+            border-radius: 40px;
+        }
+
+        .options-grid {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 22px;
+        }
+
+        .option-btn {
+            background: white;
+            border: 1px solid #FADB9F;
+            border-radius: 44px;
+            padding: 12px 20px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            min-width: 115px;
+            min-height: 100px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            box-shadow: 0 3px 8px rgba(0, 0, 0, 0.04);
+        }
+
+        .option-btn:hover {
+            transform: translateY(-3px);
+            background: #FFF6E8;
+            border-color: #F5A623;
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+        }
+
+        .option-btn:active {
+            transform: translateY(1px);
+        }
+
+        .option-btn.disabled-option {
+            pointer-events: none;
+            opacity: 0.55;
+        }
+
+        .option-content {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: #D97706;
+        }
+
+        .option-svg {
+            width: 62px;
+            height: 62px;
+        }
+
+        .ai-feedback {
+            background: #FFF9EF;
+            border-radius: 48px;
+            padding: 12px 24px;
+            margin: 12px 0 12px;
+            display: flex;
+            align-items: center;
+            gap: 18px;
+            border-left: 6px solid #F5A623;
+            border-top: 1px solid #FFEBCB;
+            border-right: 1px solid #FFEBCB;
+            border-bottom: 1px solid #FFEBCB;
+        }
+
+        .ai-avatar {
+            font-size: 2rem;
+            background: #FFEDD5;
+            width: 52px;
+            height: 52px;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .ai-message {
+            flex: 1;
+            font-size: 1rem;
+            font-weight: 500;
+            color: #B1621A;
+            line-height: 1.4;
+        }
+
+        .next-challenge-btn {
+            background: #F5A623;
+            border: none;
+            padding: 8px 30px;
+            border-radius: 44px;
+            font-size: 1rem;
+            font-weight: 600;
+            color: white;
+            cursor: pointer;
+            transition: 0.2s;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .next-challenge-btn:hover {
+            background: #E0911A;
+            transform: scale(1.02);
+        }
+
+        .reset-btn {
+            background: #FFEDD5;
+            border: 1px solid #F5C174;
+            padding: 8px 24px;
+            border-radius: 40px;
+            font-weight: 500;
+            color: #B45F1B;
+            cursor: pointer;
+            transition: 0.2s;
+            font-size: 0.9rem;
+        }
+
+        .reset-btn:hover {
+            background: #FFE4BE;
+            color: #8E4B0C;
+        }
+
+        footer {
+            text-align: center;
+            margin-top: 10px;
+            font-size: 0.65rem;
+            color: #C1813C;
+        }
+
+        html, body {
+            overflow: hidden;
+            height: 100%;
+        }
+        body {
+            overflow-y: auto;
+        }
+        .game-container {
+            max-height: 97vh;
+            overflow-y: auto;
+            scrollbar-width: thin;
+        }
+
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(4px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            animation: fadeIn 0.2s ease;
+        }
+        .grade-modal, .success-modal {
+            background: linear-gradient(145deg, #FFFBF0, #FFF7E6);
+            border-radius: 48px;
+            max-width: 480px;
+            width: 85%;
+            padding: 32px 28px 40px 28px;
+            text-align: center;
+            box-shadow: 0 25px 45px rgba(0, 0, 0, 0.2);
+            border: 2px solid #F5A623;
+            animation: slideUp 0.3s cubic-bezier(0.2, 0.9, 0.4, 1.1);
+        }
+        .grade-modal h2, .success-modal h2 {
+            font-size: 1.8rem;
+            color: #E67E22;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+        }
+        .grade-options {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 15px;
+            margin: 25px 0;
+        }
+        .grade-btn {
+            background: white;
+            border: 2px solid #F5C174;
+            border-radius: 60px;
+            padding: 12px 24px;
+            font-size: 1.3rem;
+            font-weight: 700;
+            color: #D97706;
+            cursor: pointer;
+            transition: 0.2s;
+            min-width: 100px;
+        }
+        .grade-btn:hover {
+            background: #F5A623;
+            color: white;
+            border-color: #F5A623;
+            transform: scale(1.05);
+        }
+        .modal-btn {
+            background: #F5A623;
+            border: none;
+            padding: 12px 28px;
+            border-radius: 48px;
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: white;
+            cursor: pointer;
+            transition: 0.2s;
+            margin-top: 18px;
+            display: inline-block;
+        }
+        .modal-btn:hover {
+            background: #E0911A;
+            transform: scale(1.02);
+        }
+        .success-modal p {
+            margin: 10px 0 0 0;
+            color: #BA6B1E;
+            font-weight: 500;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        @keyframes slideUp {
+            from { transform: translateY(30px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+        
+        .multi-shape-container {
+            display: flex;
+            gap: 4px;
+            flex-wrap: wrap;
+            align-items: center;
+            justify-content: center;
+        }
+    </style>
+</head>
+<body>
+<div class="game-container" id="gameRoot" style="display: none;">
+    <div class="game-header">
+        <div class="title-area">
+            <div class="game-title">🧩 逻辑规律挑战 🧠</div>
+            <div class="ai-badge">🤖 AI 推理引擎</div>
+        </div>
+        <div class="grade-selector">
+            <label>📚 当前年级：</label>
+            <span id="currentGradeDisplay" style="font-weight:700;color:#E67E22;">一年级</span>
+        </div>
+        <div class="score-board">
+            <div class="score-item"><span class="score-label">通关进度</span><span class="score-value" id="correctCountDisplay">0</span><span class="score-label">/5</span></div>
+            <div class="stars-progress" id="starProgress"></div>
+        </div>
+    </div>
+
+    <div class="pattern-area">
+        <div class="sequence-title">✨ 观察规律 · 选择下一个 ✨</div>
+        <div class="sequence-display" id="sequenceContainer"></div>
+    </div>
+
+    <div class="options-area">
+        <div style="text-align: center;"><span class="options-label">📦 点击选择正确答案</span></div>
+        <div class="options-grid" id="optionsContainer"></div>
+    </div>
+
+    <div class="ai-feedback">
+        <div class="ai-avatar">🧠✨</div>
+        <div class="ai-message" id="aiMessage"></div>
+        <button class="reset-btn" id="resetGameBtn">🔄 重新挑战</button>
+    </div>
+    <div style="display: flex; justify-content: flex-end; margin-top: 6px;">
+        <button class="next-challenge-btn" id="nextRoundBtn" style="display: none;">▶ 下一关</button>
+    </div>
+    <footer>🎯 图形 · 数字 · 词语  |  难度根据年级自动适配，越往后越有挑战  🎯</footer>
+</div>
+
+<script>
+    // ======================== 三年级题库修正：移除含有重复选项的“方形→三角形→圆形”旧题，替换为清新图形逻辑（菱形-五边形-六边形循环） ========================
+    // 全新三年级题库：第5题改为“菱形 → 五边形 → 六边形”周期循环，选项无重复，逻辑清晰。
+    const gradeQuestions = {
+        1: [
+            { seq: ['circle', 'square', 'circle', 'square'], correct: 'circle', opts: ['circle', 'triangle', 'diamond', 'star'], hint: '圆形和方形交替出现', type: 'shape' },
+            { seq: [1, 2, 3, 4], correct: '5', opts: ['5', '6', '7', '8'], hint: '每次增加1', type: 'number' },
+            { seq: ['☀️', '🌙', '☀️', '🌙'], correct: '☀️', opts: ['☀️', '🌙', '🌟', '⭐'], hint: '太阳和月亮交替', type: 'word' },
+            { seq: ['small_circle', 'large_circle', 'small_circle', 'large_circle'], correct: 'small_circle', opts: ['small_circle', 'large_circle', 'medium_circle'], hint: '小圆和大圆交替', type: 'sizeVary' },
+            { seq: ['star', 'circle', 'square', 'star', 'circle'], correct: 'square', opts: ['square', 'triangle', 'diamond', 'hexagon'], hint: '星星 → 圆形 → 方形 的循环', type: 'shape' }
+        ],
+        2: [
+            { seq: [3, 6, 9, 12], correct: '15', opts: ['15', '18', '21', '14'], hint: '3的倍数，每次增加3', type: 'number' },
+            { seq: ['star', 'star-star', 'star-star-star'], correct: 'star-star-star-star', opts: ['star-star-star-star', 'star-star', 'star', 'star-star-star'], hint: '星星的数量每次增加1个', type: 'count', countBase: 'star' },
+            { seq: [1, 3, 5, 7], correct: '9', opts: ['9', '11', '8', '10'], hint: '奇数序列，每次增加2', type: 'number' },
+            { seq: ['circle', 'circle', 'square', 'square', 'triangle'], correct: 'triangle', opts: ['triangle', 'star', 'diamond', 'pentagon'], hint: '图形按组重复: 2圆,2方,然后2三角', type: 'shape' },
+            { seq: ['🍎', '🍌', '🍊', '🍎', '🍌'], correct: '🍊', opts: ['🍊', '🍇', '🍒', '🍉'], hint: '苹果、香蕉、橘子循环', type: 'word' }
+        ],
+        // 三年级: 原第5题为【square, triangle, circle, square, triangle】周期，但选项可能导致歧义或重复，现替换为“菱形→五边形→六边形”清晰循环，保证选项无一重复。
+        3: [
+            { seq: ['triangle', 'square', 'pentagon', 'triangle', 'square'], correct: 'pentagon', opts: ['pentagon', 'hexagon', 'circle', 'star'], hint: '三角形(3边) → 正方形(4边) → 五边形(5边) 循环', type: 'shape' },
+            { seq: [5, 10, 15, 20], correct: '25', opts: ['25', '30', '22', '24'], hint: '每次增加5', type: 'number' },
+            { seq: [1, 2, 4, 7, 11], correct: '16', opts: ['16', '15', '14', '18'], hint: '依次 +1, +2, +3, +4, +5', type: 'number' },
+            { seq: [2, 4, 8, 16], correct: '32', opts: ['32', '64', '24', '48'], hint: '每次乘以2', type: 'number' },
+            // 替换新题：菱形 → 五边形 → 六边形 周期 (清晰无重复，避免原方形三角圆周期带来的选项重复)
+            { seq: ['diamond', 'pentagon', 'hexagon', 'diamond', 'pentagon'], correct: 'hexagon', opts: ['hexagon', 'heptagon', 'octagon', 'star'], hint: '菱形 → 五边形 → 六边形 周期循环', type: 'shape' }
+        ],
+        4: [
+            { seq: [2, 5, 8, 11], correct: '14', opts: ['14', '15', '13', '17'], hint: '每次增加3', type: 'number' },
+            { seq: [10, 9, 7, 4], correct: '0', opts: ['0', '1', '2', '-1'], hint: '依次减1,减2,减3,减4', type: 'number' },
+            { seq: ['small_triangle', 'medium_triangle', 'large_triangle', 'small_triangle', 'medium_triangle'], correct: 'large_triangle', opts: ['large_triangle', 'small_triangle', 'medium_triangle', 'huge_triangle'], hint: '小三角 → 中三角 → 大三角 循环', type: 'sizeVary' },
+            { seq: [1, 4, 7, 10], correct: '13', opts: ['13', '16', '12', '14'], hint: '每次增加3', type: 'number' },
+            { seq: [12, 15, 19, 24], correct: '30', opts: ['30', '29', '31', '28'], hint: '依次+3,+4,+5,+6', type: 'number' }
+        ],
+        5: [
+            { seq: [1, 1.5, 2, 2.5], correct: '3', opts: ['3', '3.5', '2', '2.75'], hint: '每次增加0.5', type: 'number' },
+            { seq: [100, 90, 81, 73, 66], correct: '60', opts: ['60', '58', '62', '59'], hint: '依次减10,减9,减8,减7,减6', type: 'number' },
+            { seq: [3, 7, 15, 31], correct: '63', opts: ['63', '127', '55', '47'], hint: '乘2加1: 3×2+1=7, 7×2+1=15...', type: 'number' },
+            { seq: ['triangle', 'square', 'pentagon', 'hexagon'], correct: 'heptagon', opts: ['heptagon', 'octagon', 'circle', 'star'], hint: '边数递增:3,4,5,6边，下一个7边形', type: 'shape' },
+            { seq: [1, 4, 10, 22], correct: '46', opts: ['46', '44', '48', '52'], hint: '乘2加2: 1×2+2=4, 4×2+2=10...', type: 'number' }
+        ],
+        6: [
+            { seq: [2, 5, 10, 17], correct: '26', opts: ['26', '25', '28', '24'], hint: '加3,加5,加7,加9', type: 'number' },
+            { seq: [1, 2, 6, 24], correct: '120', opts: ['120', '720', '100', '144'], hint: '乘递增倍数: ×2, ×3, ×4, ×5', type: 'number' },
+            { seq: ['red_circle', 'blue_square', 'green_triangle', 'red_circle', 'blue_square'], correct: 'green_triangle', opts: ['green_triangle', 'yellow_star', 'purple_diamond', 'orange_heart'], hint: '红圆 → 蓝方 → 绿三角 循环', type: 'colorShape' },
+            { seq: [1, 8, 27, 64], correct: '125', opts: ['125', '216', '100', '81'], hint: '立方数: 1³,2³,3³,4³', type: 'number' },
+            { seq: [0.1, 0.2, 0.4, 0.7], correct: '1.1', opts: ['1.1', '1.0', '0.9', '1.2'], hint: '依次+0.1,+0.2,+0.3,+0.4', type: 'number' }
+        ]
+    };
+
+    // 稳定的图形渲染函数（支持新增的 diamond, pentagon, hexagon, heptagon, octagon等）
+    function getShapeSVG(shape, size = 68) {
+        const colorMap = { 
+            circle: '#F5A623', square: '#5D9BEC', triangle: '#6BCB77', diamond: '#FF6B6B', 
+            star: '#FFB347', hexagon: '#9D65FF', pentagon: '#FF8C69', heptagon: '#9D65FF', 
+            octagon: '#8B5CF6', rhombus: '#FF6B6B'
+        };
+        const center = size/2, r = size * 0.32;
+        const color = colorMap[shape] || '#E67E22';
+        if(shape === 'circle') return `<svg width="${size}" height="${size}" viewBox="0 0 ${size} ${size}"><circle cx="${center}" cy="${center}" r="${r}" fill="${color}" stroke="#FFF" stroke-width="2.5"/></svg>`;
+        if(shape === 'square') return `<svg width="${size}" height="${size}" viewBox="0 0 ${size} ${size}"><rect x="${center - r*0.8}" y="${center - r*0.8}" width="${r*1.6}" height="${r*1.6}" rx="12" fill="${color}" stroke="#FFF" stroke-width="2"/></svg>`;
+        if(shape === 'triangle') { const side = r*1.7, h = side*Math.sqrt(3)/2; const pts = `${center},${center - h/1.5} ${center + side/2},${center + h/2.8} ${center - side/2},${center + h/2.8}`; return `<svg width="${size}" height="${size}" viewBox="0 0 ${size} ${size}"><polygon points="${pts}" fill="${color}" stroke="#FFF" stroke-width="2"/></svg>`; }
+        if(shape === 'diamond') { const w = r*1.2, h = r*1.2; const pts = `${center},${center - h} ${center + w},${center} ${center},${center + h} ${center - w},${center}`; return `<svg width="${size}" height="${size}" viewBox="0 0 ${size} ${size}"><polygon points="${pts}" fill="${color}" stroke="#FFF" stroke-width="2"/></svg>`; }
+        if(shape === 'star') { let pts = []; for(let i=0;i<10;i++){ let rad = i*Math.PI/5; let rad2 = (i%2===0)? r*0.9: r*0.4; let x = center + rad2*Math.cos(rad); let y = center + rad2*Math.sin(rad); pts.push(`${x},${y}`); } return `<svg width="${size}" height="${size}" viewBox="0 0 ${size} ${size}"><polygon points="${pts.join(' ')}" fill="${color}" stroke="#FFF" stroke-width="1.8"/></svg>`; }
+        if(shape === 'pentagon' || shape === 'hexagon' || shape === 'heptagon' || shape === 'octagon') {
+            let sides = { pentagon:5, hexagon:6, heptagon:7, octagon:8 }[shape] || 5;
+            let pts = []; for(let i=0;i<sides;i++){ let ang = i*Math.PI*2/sides - Math.PI/2; let x = center + r*Math.cos(ang); let y = center + r*Math.sin(ang); pts.push(`${x},${y}`); }
+            return `<svg width="${size}" height="${size}" viewBox="0 0 ${size} ${size}"><polygon points="${pts.join(' ')}" fill="${color}" stroke="#FFF" stroke-width="2"/></svg>`;
+        }
+        return `<svg width="${size}" height="${size}"><circle cx="${center}" cy="${center}" r="${r}" fill="#F3B35A"/></svg>`;
+    }
+    
+    function getColoredShape(desc, size=68) { 
+        let parts = desc.split('_'); 
+        let colorMap = {red:'#E34234', blue:'#5D9BEC', green:'#6BCB77', yellow:'#FFD966', purple:'#9D65FF', orange:'#FF8C42'}; 
+        let shape = parts[1] || parts[0];
+        let color = colorMap[parts[0]] || '#F5A623';
+        const center = size/2, r = size * 0.32;
+        if(shape === 'circle') return `<svg width="${size}" height="${size}" viewBox="0 0 ${size} ${size}"><circle cx="${center}" cy="${center}" r="${r}" fill="${color}" stroke="#FFF" stroke-width="2.5"/></svg>`;
+        if(shape === 'square') return `<svg width="${size}" height="${size}" viewBox="0 0 ${size} ${size}"><rect x="${center - r*0.8}" y="${center - r*0.8}" width="${r*1.6}" height="${r*1.6}" rx="12" fill="${color}" stroke="#FFF" stroke-width="2"/></svg>`;
+        if(shape === 'triangle') { const side = r*1.7, h = side*Math.sqrt(3)/2; const pts = `${center},${center - h/1.5} ${center + side/2},${center + h/2.8} ${center - side/2},${center + h/2.8}`; return `<svg width="${size}" height="${size}" viewBox="0 0 ${size} ${size}"><polygon points="${pts}" fill="${color}" stroke="#FFF" stroke-width="2"/></svg>`; }
+        return getShapeSVG(shape, size);
+    }
+    
+    function getMultiShapeSVG(base, cnt, size=55) { let html='<div class="multi-shape-container">'; for(let i=0;i<cnt;i++) html+=`<span>${getShapeSVG(base, size)}</span>`; return html+'</div>'; }
+    function getSizeCircleSVG(type) { let sz = {small:45, medium:65, large:85}[type]||65; return `<svg width="${sz}" height="${sz}" viewBox="0 0 ${sz} ${sz}"><circle cx="${sz/2}" cy="${sz/2}" r="${sz/2-8}" fill="#F5A623" stroke="#FFF" stroke-width="2.5"/></svg>`; }
+
+    let gameState = { currentQuestion: null, correctCount: 0, waitingNext: false, grade: 1, gradeQuestionPool: [] };
+    const gameContainer = document.getElementById('gameRoot');
+    const sequenceContainer = document.getElementById('sequenceContainer');
+    const optionsContainer = document.getElementById('optionsContainer');
+    const aiMessageSpan = document.getElementById('aiMessage');
+    const correctCountSpan = document.getElementById('correctCountDisplay');
+    const starProgressSpan = document.getElementById('starProgress');
+    const nextRoundBtn = document.getElementById('nextRoundBtn');
+    const resetBtn = document.getElementById('resetGameBtn');
+    const currentGradeDisplay = document.getElementById('currentGradeDisplay');
+
+    function updateProgressUI() { correctCountSpan.innerText = gameState.correctCount; let stars=''; for(let i=0;i<5;i++) stars+=`<span class="star ${i<gameState.correctCount?'active':'inactive'}">★</span>`; starProgressSpan.innerHTML=stars; }
+    
+    function renderSequenceItem(val, q) { 
+        if(q.type === 'count' && typeof val === 'string' && val.includes('-')) return getMultiShapeSVG(q.countBase, val.split('-').length, 58);
+        if(q.type === 'colorShape') return `<div class="pattern-svg">${getColoredShape(val,68)}</div>`; 
+        if(q.type === 'sizeVary') return `<div class="pattern-svg">${getSizeCircleSVG(val.split('_')[0])}</div>`; 
+        if(q.type === 'shape') return `<div class="pattern-svg">${getShapeSVG(val,68)}</div>`; 
+        if(q.type === 'number') return `<div class="pattern-number">${val}</div>`; 
+        return `<div class="pattern-word">${val}</div>`; 
+    }
+    
+    function renderSequence(q) { 
+        let html = ''; 
+        for(let v of q.seq) html += `<div class="pattern-item">${renderSequenceItem(v, q)}</div>`; 
+        html += `<div class="pattern-item question-item"><div class="question-mark-symbol">❓</div></div>`; 
+        sequenceContainer.innerHTML = html; 
+    }
+    
+    function renderOptionContent(opt, q) { 
+        if(q.type === 'count' && typeof opt === 'string' && opt.includes('-')) return getMultiShapeSVG(q.countBase, opt.split('-').length, 55);
+        if(q.type === 'colorShape') return `<div class="option-svg">${getColoredShape(opt,62)}</div>`; 
+        if(q.type === 'sizeVary') return `<div class="option-svg">${getSizeCircleSVG(opt.split('_')[0])}</div>`; 
+        if(q.type === 'shape') return `<div class="option-svg">${getShapeSVG(opt,62)}</div>`; 
+        if(q.type === 'number') return `<span class="option-content">${opt}</span>`; 
+        return `<span class="option-content" style="font-size:1.2rem;">${opt}</span>`; 
+    }
+    
+    function renderOptions(q) { 
+        let opts = [...q.opts]; 
+        for(let i=opts.length-1;i>0;i--){ let j=Math.floor(Math.random()*(i+1)); [opts[i], opts[j]] = [opts[j], opts[i]]; } 
+        let html = ''; 
+        for(let opt of opts) html += `<button class="option-btn" data-value="${opt}">${renderOptionContent(opt,q)}</button>`; 
+        optionsContainer.innerHTML = html; 
+        document.querySelectorAll('.option-btn').forEach(btn => btn.addEventListener('click', () => {
+            if(gameState.waitingNext){ aiMessageSpan.innerHTML = "请点击「下一关」继续～"; return; }
+            checkAnswer(btn.getAttribute('data-value'));
+        })); 
+    }
+    
+    function initGradePool(grade) { 
+        let source = gradeQuestions[grade] || gradeQuestions[1];
+        gameState.gradeQuestionPool = source.map(q => ({...q}));
+    }
+    
+    function fetchQuestionByDifficulty(step) { 
+        let idx = step - 1; 
+        if(idx >= 0 && idx < gameState.gradeQuestionPool.length) return gameState.gradeQuestionPool[idx]; 
+        return null; 
+    }
+    
+    function loadGame(grade) {
+        gameState.grade = grade;
+        gameState.correctCount = 0;
+        gameState.waitingNext = false;
+        nextRoundBtn.style.display = 'none';
+        updateProgressUI();
+        initGradePool(grade);
+        let first = fetchQuestionByDifficulty(1);
+        if(first) {
+            gameState.currentQuestion = first;
+            renderSequence(first);
+            renderOptions(first);
+            aiMessageSpan.innerHTML = `🎉 欢迎来到${grade}年级挑战！第1题：${first.hint} 请选择正确答案～`;
+            currentGradeDisplay.innerText = grade + '年级';
+        } else {
+            aiMessageSpan.innerHTML = "加载题目失败，请刷新页面。";
+        }
+        if(optionsContainer) document.querySelectorAll('.option-btn').forEach(btn=>btn.classList.remove('disabled-option'));
+        gameContainer.style.display = 'block';
+    }
+    
+    function showGradeModal() {
+        gameContainer.style.display = 'none';
+        let modal = document.createElement('div');
+        modal.className = 'modal-overlay';
+        modal.innerHTML = `
+            <div class="grade-modal">
+                <h2>🎮 选择你的年级 🎮</h2>
+                <div class="grade-options">
+                    <button class="grade-btn" data-grade="1">一年级</button>
+                    <button class="grade-btn" data-grade="2">二年级</button>
+                    <button class="grade-btn" data-grade="3">三年级</button>
+                    <button class="grade-btn" data-grade="4">四年级</button>
+                    <button class="grade-btn" data-grade="5">五年级</button>
+                    <button class="grade-btn" data-grade="6">六年级</button>
+                </div>
+                <p style="margin-top:15px; color:#B45F1B;">✨ 选择后AI将为你匹配专属难度 ✨</p>
+            </div>
+        `;
+        document.body.appendChild(modal);
+        modal.querySelectorAll('.grade-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                let grade = parseInt(btn.getAttribute('data-grade'));
+                modal.remove();
+                loadGame(grade);
+            });
+        });
+    }
+    
+    function showWinModalAndReset() {
+        let modal = document.createElement('div');
+        modal.className = 'modal-overlay';
+        // 调整弹窗内部结构，让按钮位置更合理，增加上下边距，按钮下方留白充足
+        modal.innerHTML = `<div class="success-modal"><h2>🎉 闯关成功 🎉</h2><p>太厉害了！你完成了${gameState.grade}年级的逻辑挑战！<br>点击按钮开启全新一轮挑战～</p><div style="margin-top: 12px;"><button class="modal-btn" id="closeWinModal">继续新挑战</button></div></div>`;
+        document.body.appendChild(modal);
+        const btn = document.getElementById('closeWinModal');
+        if(btn) {
+            btn.addEventListener('click', () => {
+                modal.remove();
+                showGradeModal();
+            });
+        }
+    }
+    
+    function checkAnswer(selected) { 
+        if(gameState.waitingNext) return; 
+        let q = gameState.currentQuestion; 
+        let isCorrect = (selected == q.correct);
+        if(isCorrect) { 
+            gameState.correctCount++; 
+            updateProgressUI(); 
+            aiMessageSpan.innerHTML = `✅ 正确！规律：${q.hint}。 +1分 (${gameState.correctCount}/5)`; 
+            if(gameState.correctCount >= 5) { 
+                gameState.waitingNext = true; 
+                nextRoundBtn.style.display = 'none'; 
+                document.querySelectorAll('.option-btn').forEach(btn=>btn.classList.add('disabled-option')); 
+                showWinModalAndReset(); 
+                return; 
+            } else { 
+                gameState.waitingNext = true; 
+                nextRoundBtn.style.display = 'inline-block'; 
+                document.querySelectorAll('.option-btn').forEach(btn=>btn.classList.add('disabled-option')); 
+                aiMessageSpan.innerHTML += `<span style="display:block;margin-top:5px;">✨ 正确！点击「下一关」，难度提升 ✨</span>`; 
+            } 
+        } else { 
+            aiMessageSpan.innerHTML = `❌ 不对哦～ 提示：${q.hint}，再试试看！`; 
+            let fb = document.querySelector('.ai-feedback'); 
+            fb.style.transform = 'scale(1.01)'; 
+            setTimeout(()=>{if(fb)fb.style.transform='';},150); 
+        } 
+    }
+    
+    function loadNextQuestion() { 
+        if(!gameState.waitingNext) return; 
+        if(gameState.correctCount >= 5) return; 
+        let nextStep = gameState.correctCount + 1; 
+        let nextQ = fetchQuestionByDifficulty(nextStep); 
+        if(!nextQ) { 
+            aiMessageSpan.innerHTML = "题目不够了，重置一下试试吧。"; 
+            return; 
+        } 
+        gameState.currentQuestion = nextQ; 
+        renderSequence(nextQ); 
+        renderOptions(nextQ); 
+        gameState.waitingNext = false; 
+        nextRoundBtn.style.display = 'none'; 
+        document.querySelectorAll('.option-btn').forEach(btn=>btn.classList.remove('disabled-option')); 
+        aiMessageSpan.innerHTML = `🧠 第 ${gameState.correctCount+1}/5 关：${nextQ.hint}`; 
+    }
+    
+    resetBtn.addEventListener('click', () => { showGradeModal(); });
+    nextRoundBtn.addEventListener('click', loadNextQuestion);
+    
+    showGradeModal();
+</script>
+</body>
+</html>
