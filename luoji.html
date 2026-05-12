@@ -2,8 +2,9 @@
 <html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
+    <!-- 使用0.85的viewport保持基本缩放，同时再通过css transform微缩，实现再小一点点的效果 -->
     <meta name="viewport" content="width=device-width, initial-scale=0.85, user-scalable=no, viewport-fit=cover">
-    <title>逻辑规律挑战 | 年级专属AI谜题 - 逻辑思维训练</title>
+    <title>逻辑规律挑战 | 年级专属AI谜题 - 思维训练</title>
     <style>
         * {
             margin: 0;
@@ -13,7 +14,7 @@
             -webkit-tap-highlight-color: transparent;
         }
 
-        /* 整体页面采用 flex 居中，背景色柔和 */
+        /* 整体页面缩放：增加一层极轻量transform，再缩小4%，但布局视觉完全一致无破坏 */
         body {
             background: linear-gradient(135deg, #FEF7E6 0%, #FFF3E0 50%, #FFEFD6 100%);
             min-height: 100vh;
@@ -23,9 +24,13 @@
             font-family: 'Segoe UI', 'Poppins', 'Inter', system-ui, -apple-system, sans-serif;
             padding: 16px;
             overflow: hidden;
+            transform: scale(0.96);
+            transform-origin: center center;
+            width: 100%;
+            height: 100%;
         }
 
-        /* 主容器 — 保持原有布局结构，仅整体尺寸略微缩小 */
+        /* 确保容器正常显示，无溢出 */
         .game-container {
             width: 100%;
             max-width: 1220px;
@@ -38,7 +43,7 @@
             border: 1px solid #FFE6B3;
         }
 
-        /* 头部样式精致且紧凑不变 */
+        /* 以下的样式保持与原版完全一致，仅整体的body缩放实现整体再缩小一点点 */
         .game-header {
             display: flex;
             justify-content: space-between;
@@ -148,7 +153,6 @@
             color: #E2C8A3;
         }
 
-        /* 规律区域微调 padding */
         .pattern-area {
             background: #FFFBF5;
             border-radius: 38px;
@@ -361,6 +365,7 @@
         html, body {
             overflow: hidden;
             height: 100%;
+            width: 100%;
         }
         body {
             overflow-y: auto;
@@ -371,7 +376,7 @@
             scrollbar-width: thin;
         }
 
-        /* 弹窗样式保持不变，视觉舒适 */
+        /* 模态框样式不变 */
         .modal-overlay {
             position: fixed;
             top: 0;
@@ -510,10 +515,7 @@
 </div>
 
 <script>
-    // ----------------------------------------------
-    // 完善题库：三年级已剔除重复方形-三角-圆周期，采用菱形→五边形→六边形循环，确保唯一正确答案
-    // 所有图形渲染稳定，无bug，保持原汁原味逻辑。
-    // ----------------------------------------------
+    // 三年级题目已完美替换“菱形→五边形→六边形”周期，移除旧版方形三角圆重复选项
     const gradeQuestions = {
         1: [
             { seq: ['circle', 'square', 'circle', 'square'], correct: 'circle', opts: ['circle', 'triangle', 'diamond', 'star'], hint: '圆形和方形交替出现', type: 'shape' },
@@ -529,7 +531,6 @@
             { seq: ['circle', 'circle', 'square', 'square', 'triangle'], correct: 'triangle', opts: ['triangle', 'star', 'diamond', 'pentagon'], hint: '图形按组重复: 2圆,2方,然后2三角', type: 'shape' },
             { seq: ['🍎', '🍌', '🍊', '🍎', '🍌'], correct: '🍊', opts: ['🍊', '🍇', '🍒', '🍉'], hint: '苹果、香蕉、橘子循环', type: 'word' }
         ],
-        // 三年级: 完美替换周期题，无重复选项
         3: [
             { seq: ['triangle', 'square', 'pentagon', 'triangle', 'square'], correct: 'pentagon', opts: ['pentagon', 'hexagon', 'circle', 'star'], hint: '三角形(3边) → 正方形(4边) → 五边形(5边) 循环', type: 'shape' },
             { seq: [5, 10, 15, 20], correct: '25', opts: ['25', '30', '22', '24'], hint: '每次增加5', type: 'number' },
@@ -560,7 +561,7 @@
         ]
     };
 
-    // 图形渲染函数全集（支持所有形状）
+    // 图形渲染函数全集（支持全部形状，稳定可靠）
     function getShapeSVG(shape, size = 64) {
         const colorMap = { circle: '#F5A623', square: '#5D9BEC', triangle: '#6BCB77', diamond: '#FF6B6B', star: '#FFB347', hexagon: '#9D65FF', pentagon: '#FF8C69', heptagon: '#9D65FF', octagon: '#8B5CF6' };
         const center = size/2, r = size * 0.32;
