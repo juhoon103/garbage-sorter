@@ -1,0 +1,372 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>画框凑十消消乐</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: "微软雅黑", Arial, sans-serif;
+        }
+        body {
+            background: linear-gradient(120deg, #c1e4ff, #e8f4ff);
+            padding: 20px;
+        }
+        .wrap {
+            max-width: 580px;
+            margin: 0 auto;
+            background: #fff;
+            border-radius: 20px;
+            padding: 25px;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+            position: relative;
+        }
+        h1 {
+            text-align: center;
+            color: #2266cc;
+            margin-bottom: 15px;
+            font-size: 24px;
+        }
+        .score-bar {
+            text-align: center;
+            font-size: 18px;
+            margin-bottom: 10px;
+            font-weight: bold;
+            color: #333;
+        }
+        .time-bar {
+            text-align: center;
+            font-size: 20px;
+            font-weight: bold;
+            color: #e74c3c;
+            margin-bottom: 15px;
+        }
+        .game-box {
+            position: relative;
+            background: #f0f7ff;
+            padding: 12px;
+            border-radius: 12px;
+            margin-bottom: 20px;
+        }
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(8, 1fr);
+            gap: 6px;
+        }
+        .cell {
+            aspect-ratio: 1;
+            background: #ffffff;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            font-weight: bold;
+            color: #225599;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.08);
+            user-select: none;
+            transition: all 0.2s;
+        }
+        .cell.active {
+            background: #81c784;
+            color: #fff;
+        }
+        .cell.hide {
+            background: transparent !important;
+            color: transparent !important;
+            box-shadow: none !important;
+        }
+        /* 碎掉动画 */
+        .cell.break {
+            animation: breakAnim 0.6s forwards;
+        }
+        @keyframes breakAnim {
+            0% { transform: scale(1); opacity: 1; }
+            50% { transform: scale(1.2); opacity: 0.5; }
+            100% { transform: scale(0); opacity: 0; }
+        }
+        .select-box {
+            position: absolute;
+            border: 2px dashed #ff6600;
+            background: rgba(255, 102, 0, 0.12);
+            pointer-events: none;
+            display: none;
+            border-radius: 6px;
+        }
+        .btn-reset {
+            display: block;
+            width: 160px;
+            height: 45px;
+            line-height: 45px;
+            text-align: center;
+            background: #2266cc;
+            color: #fff;
+            border: none;
+            border-radius: 10px;
+            font-size: 16px;
+            margin: 0 auto;
+            cursor: pointer;
+        }
+        .rule {
+            margin-top: 15px;
+            text-align: center;
+            color: #666;
+            font-size: 14px;
+            line-height: 1.6;
+        }
+        /* 弹窗 */
+        .modal {
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            background: rgba(0,0,0,0.5);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 999;
+        }
+        .modal-content {
+            background: #fff;
+            padding: 30px;
+            border-radius: 15px;
+            text-align: center;
+            width: 300px;
+        }
+        .modal h2 {
+            color: #2266cc;
+            margin-bottom: 15px;
+        }
+        .modal p {
+            font-size: 18px;
+            margin-bottom: 20px;
+        }
+        .modal button {
+            padding: 10px 25px;
+            background: #2266cc;
+            color: #fff;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+    </style>
+</head>
+<body>
+    <div class="wrap">
+        <h1>画框凑十消消乐</h1>
+        <div class="time-bar">剩余时间：<span id="time">02:00</span></div>
+        <div class="score-bar">得分：<span id="score">0</span></div>
+
+        <div class="game-box" id="gameBox">
+            <div class="grid" id="grid"></div>
+            <div class="select-box" id="selectBox"></div>
+        </div>
+
+        <button class="btn-reset" id="resetBtn">重新开始</button>
+        <div class="rule">
+            按住鼠标拖动画方框<br>框内数字相加等于 10 自动消除
+        </div>
+    </div>
+
+    <!-- 结束弹窗 -->
+    <div class="modal" id="endModal">
+        <div class="modal-content">
+            <h2>⏰ 时间到！</h2>
+            <p>最终得分：<span id="finalScore">0</span> 分</p>
+            <button onclick="restartGame()">再来一局</button>
+        </div>
+    </div>
+
+    <script>
+        const ROW = 8;
+        const COL = 8;
+        let numGrid = [];
+        let score = 0;
+        let cellList = [];
+        let timeLeft = 120; // 2分钟 = 120秒
+        let timer;
+        let gameOver = false;
+
+        const gameBox = document.getElementById('gameBox');
+        const gridDom = document.getElementById('grid');
+        const selectBox = document.getElementById('selectBox');
+        const scoreDom = document.getElementById('score');
+        const timeDom = document.getElementById('time');
+        const resetBtn = document.getElementById('resetBtn');
+        const endModal = document.getElementById('endModal');
+        const finalScoreDom = document.getElementById('finalScore');
+
+        // 初始化游戏
+        function initGame() {
+            clearInterval(timer);
+            gameOver = false;
+            score = 0;
+            timeLeft = 120;
+            updateScore();
+            updateTime();
+            gridDom.innerHTML = '';
+            numGrid = [];
+            endModal.style.display = 'none';
+
+            for(let i = 0; i < ROW; i++){
+                numGrid[i] = [];
+                for(let j = 0; j < COL; j++){
+                    let n = Math.floor(Math.random() * 9) + 1;
+                    numGrid[i][j] = n;
+                    let cell = document.createElement('div');
+                    cell.className = 'cell';
+                    cell.innerText = n;
+                    cell.dataset.row = i;
+                    cell.dataset.col = j;
+                    gridDom.appendChild(cell);
+                }
+            }
+            cellList = document.querySelectorAll('.cell');
+            startTimer();
+        }
+
+        // 倒计时
+        function startTimer() {
+            timer = setInterval(() => {
+                if(gameOver) return;
+                timeLeft--;
+                updateTime();
+                if(timeLeft <= 0) {
+                    clearInterval(timer);
+                    endGame();
+                }
+            }, 1000);
+        }
+
+        // 更新时间显示
+        function updateTime() {
+            let min = String(Math.floor(timeLeft / 60)).padStart(2, '0');
+            let sec = String(timeLeft % 60).padStart(2, '0');
+            timeDom.innerText = `${min}:${sec}`;
+        }
+
+        function updateScore(){
+            scoreDom.innerText = score;
+        }
+
+        function clearAllActive(){
+            cellList.forEach(cell => {
+                cell.classList.remove('active');
+            });
+        }
+
+        // 画框逻辑
+        let startX, startY;
+        let isDrag = false;
+
+        gameBox.addEventListener('mousedown', e => {
+            if(gameOver) return;
+            isDrag = true;
+            clearAllActive();
+            let rect = gameBox.getBoundingClientRect();
+            startX = e.clientX - rect.left;
+            startY = e.clientY - rect.top;
+            selectBox.style.left = startX + 'px';
+            selectBox.style.top = startY + 'px';
+            selectBox.style.width = '0px';
+            selectBox.style.height = '0px';
+            selectBox.style.display = 'block';
+        });
+
+        gameBox.addEventListener('mousemove', e => {
+            if(!isDrag || gameOver) return;
+            let rect = gameBox.getBoundingClientRect();
+            let nowX = e.clientX - rect.left;
+            let nowY = e.clientY - rect.top;
+            let l = Math.min(startX, nowX);
+            let t = Math.min(startY, nowY);
+            let w = Math.abs(nowX - startX);
+            let h = Math.abs(nowY - startY);
+            selectBox.style.left = l + 'px';
+            selectBox.style.top = t + 'px';
+            selectBox.style.width = w + 'px';
+            selectBox.style.height = h + 'px';
+
+            let boxRect = selectBox.getBoundingClientRect();
+            cellList.forEach(cell => {
+                if(cell.classList.contains('hide')) return;
+                let cRect = cell.getBoundingClientRect();
+                let inRange = !(
+                    cRect.right < boxRect.left ||
+                    cRect.left > boxRect.right ||
+                    cRect.bottom < boxRect.top ||
+                    cRect.top > boxRect.bottom
+                );
+                if(inRange){
+                    cell.classList.add('active');
+                }else{
+                    cell.classList.remove('active');
+                }
+            });
+        });
+
+        gameBox.addEventListener('mouseup', () => {
+            if(!isDrag || gameOver) return;
+            isDrag = false;
+            selectBox.style.display = 'none';
+            checkBoxNum();
+        });
+
+        function checkBoxNum(){
+            let sum = 0;
+            let willHide = [];
+            cellList.forEach(cell => {
+                if(cell.classList.contains('active')){
+                    let r = parseInt(cell.dataset.row);
+                    let c = parseInt(cell.dataset.col);
+                    sum += numGrid[r][c];
+                    willHide.push(cell);
+                }
+            });
+            if(sum === 10 && willHide.length > 0){
+                willHide.forEach(cell => {
+                    cell.classList.remove('active');
+                    cell.classList.add('hide');
+                    let r = parseInt(cell.dataset.row);
+                    let c = parseInt(cell.dataset.col);
+                    numGrid[r][c] = 0;
+                });
+                score += 10;
+                updateScore();
+            }else{
+                clearAllActive();
+            }
+        }
+
+        // 游戏结束
+        function endGame() {
+            gameOver = true;
+            clearInterval(timer);
+            
+            // 格子碎掉动画
+            cellList.forEach(cell => {
+                if(!cell.classList.contains('hide')){
+                    cell.classList.add('break');
+                }
+            });
+
+            // 弹出成绩
+            setTimeout(() => {
+                finalScoreDom.innerText = score;
+                endModal.style.display = 'flex';
+            }, 800);
+        }
+
+        // 重新开始
+        function restartGame() {
+            initGame();
+        }
+
+        resetBtn.onclick = initGame;
+        initGame();
+    </script>
+</body>
+</html>
